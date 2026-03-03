@@ -659,13 +659,10 @@
     }
 
     function switchTab(t) {
-      document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['html','links','chat'][i] === t));
-document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-document.getElementById('tab-'+t).classList.add('active');
-      document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['html','links'][i] === t));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('tab-'+t).classList.add('active');
-    }
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['html','links','chat'][i] === t));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+}
 
     function showToast(msg) {
       const t = document.getElementById("toast");
