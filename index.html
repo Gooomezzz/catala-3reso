@@ -27,7 +27,7 @@
     body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; opacity: 0; transition: opacity 0.4s; }
     body.ready { opacity: 1; }
 
-    #redirecting { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 1.5rem; }
+    #redirecting { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 1.5rem; }
     #redirecting.hidden { display: none; }
     .redirect-spinner { width: 28px; height: 28px; border: 2px solid var(--border-hi); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     .redirect-text { font-family: 'Syne Mono', monospace; font-size: 0.72rem; letter-spacing: 0.15em; color: var(--text-3); text-transform: uppercase; }
@@ -331,7 +331,7 @@
   location.reload();
 }
     const SECRET_CODE = atob("MjMxMQ==");
-    const SECRET_TIME = 5000000;
+    const SECRET_TIME = 3000;
     const REDIRECT_URL = "https://classroom.google.com";
     const SESSION_KEY = "hub_unlocked_v1";
     const GROQ_KEY = localStorage.getItem('groq_key') || '';
@@ -393,7 +393,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       sessionStorage.removeItem(SESSION_KEY);
       if (sessionStorage.getItem(SESSION_KEY)) { showApp(); }
-      else { window._redirectTimer = setTimeout(() => { window.location.replace(REDIRECT_URL); }, 5000); }
+      else { window._redirectTimer = setTimeout(() => { window.location.replace(REDIRECT_URL); }, 3000); }
     });
 
     let tapCount = 0, tapTimer = null;
