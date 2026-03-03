@@ -569,7 +569,8 @@
     //  COMPROVACIÓ INICIAL
     // ════════════════════════════════════════════
     window.addEventListener("DOMContentLoaded", () => {
-      if (sessionStorage.getItem(SESSION_KEY)) {
+  sessionStorage.removeItem(SESSION_KEY); // ← añade esta línea
+  if (sessionStorage.getItem(SESSION_KEY)) {
         // Ja estava desbloquejat en aquesta sessió
         showApp();
       } else {
