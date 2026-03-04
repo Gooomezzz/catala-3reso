@@ -9,28 +9,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Syne+Mono&family=Cormorant:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0f;
-      --surface: #111118;
-      --surface-2: #18181f;
-      --border: rgba(255,255,255,0.06);
-      --border-hi: rgba(255,255,255,0.12);
-      --text: #e8e8f0;
-      --text-2: #7a7a9a;
-      --text-3: #44445a;
-      --accent: #8f8ce8;
-      --accent-2: #b8b5ff;
-      --gold: #c9a84c;
-      --red: #e87070;
+      --bg: #0a0a0f; --surface: #111118; --surface-2: #18181f;
+      --border: rgba(255,255,255,0.06); --border-hi: rgba(255,255,255,0.12);
+      --text: #e8e8f0; --text-2: #7a7a9a; --text-3: #44445a;
+      --accent: #8f8ce8; --accent-2: #b8b5ff; --gold: #c9a84c; --red: #e87070;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: auto; }
     body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; opacity: 0; transition: opacity 0.4s; }
     body.ready { opacity: 1; }
 
     #redirecting { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 1.5rem; }
     #redirecting.hidden { display: none; }
-    .redirect-spinner { width: 28px; height: 28px; border: 2px solid var(--border-hi); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
-    .redirect-text { font-family: 'Syne Mono', monospace; font-size: 0.72rem; letter-spacing: 0.15em; color: var(--text-3); text-transform: uppercase; }
+    .redirect-spinner { width: 28px; height: 28px; border: 2px solid #ddd; border-top-color: #8f8ce8; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    .redirect-text { font-family: 'Syne Mono', monospace; font-size: 0.72rem; letter-spacing: 0.15em; color: #aaa; text-transform: uppercase; }
 
     .app { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; }
 
@@ -56,22 +47,6 @@
     .file-search:focus { border-color: var(--accent); }
     .file-search::placeholder { color: var(--text-3); }
     .file-search-count { font-family: 'Syne Mono', monospace; font-size: 0.65rem; color: var(--text-2); white-space: nowrap; letter-spacing: 0.06em; }
-
-    .file-list { border-top: 1px solid var(--border); animation: fadeUp 0.4s ease; }
-    .file-row { display: flex; align-items: center; gap: 1.25rem; padding: 0.9rem 0; border-bottom: 1px solid var(--border); cursor: pointer; position: relative; overflow: visible; transition: background 0.12s; }
-    .file-row:last-child { border-bottom: none; }
-    .file-row::before { content: ''; position: absolute; left: -2.5rem; top: 0; width: 2px; height: 100%; background: var(--accent); transform: scaleY(0); transition: transform 0.15s; }
-    .file-row:hover { background: rgba(255,255,255,0.02); }
-    .file-row:hover::before { transform: scaleY(1); }
-    .file-type-badge { width: 38px; height: 26px; border: 1px solid var(--border-hi); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-family: 'Syne Mono', monospace; font-size: 0.55rem; letter-spacing: 0.06em; color: var(--text-2); flex-shrink: 0; background: var(--surface); }
-    .file-type-badge.is-html { border-color: var(--accent); color: var(--accent); }
-    .file-type-badge.is-link { border-color: var(--gold); color: var(--gold); }
-    .file-name { flex: 1; font-size: 0.9rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .file-btns { display: flex; gap: 0.5rem; flex-shrink: 0; }
-    .btn-file { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.35rem 0.75rem; border: 1px solid var(--border-hi); border-radius: 2px; background: transparent; color: var(--text-2); cursor: pointer; transition: 0.15s; }
-    .btn-file:hover { color: var(--text); border-color: var(--text); }
-    .btn-file.launch { border-color: rgba(143,140,232,0.4); color: var(--accent); }
-    .btn-file.launch:hover { background: rgba(143,140,232,0.1); border-color: var(--accent); }
 
     .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; animation: fadeUp 0.4s ease; }
     .link-card { border: 1px solid var(--border-hi); border-radius: 4px; padding: 1.25rem; background: var(--surface); cursor: pointer; transition: 0.15s; display: flex; flex-direction: column; gap: 0.5rem; }
@@ -102,7 +77,6 @@
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface-2); border: 1px solid var(--accent); border-radius: 3px; padding: 0.65rem 1.5rem; font-family: 'Syne Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; color: var(--accent); opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 2000; white-space: nowrap; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ── AI TAB ── */
     .ai-section { padding: 2rem 0 4rem; }
     .ai-personas { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .ai-persona-btn { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.4rem 1rem; border: 1px solid var(--border-hi); border-radius: 2px; background: transparent; color: var(--text-3); cursor: pointer; transition: 0.15s; }
@@ -139,15 +113,6 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
-    .dm-modal { display:none; position:fixed; inset:0; z-index:3000; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; }
-.dm-modal.show { display:flex; }
-.dm-box { background:var(--surface); border:1px solid var(--border-hi); width:100%; max-width:480px; height:600px; display:flex; flex-direction:column; }
-.dm-header { display:flex; align-items:center; gap:0.75rem; padding:1rem 1.25rem; border-bottom:1px solid var(--border); }
-.dm-title { font-family:'Syne Mono',monospace; font-size:0.72rem; letter-spacing:0.1em; color:var(--text-2); flex:1; text-transform:uppercase; }
-.dm-messages { flex:1; overflow-y:auto; padding:1rem 1.25rem; display:flex; flex-direction:column; gap:0.6rem; }
-.dm-input-row { display:flex; gap:0.75rem; padding:0.85rem 1.25rem; border-top:1px solid var(--border); }
-.dm-input { flex:1; background:transparent; border:none; border-bottom:1px solid var(--border-hi); color:var(--text); font-family:'Syne',sans-serif; font-size:0.83rem; padding:0.3rem 0; outline:none; }
-.dm-input:focus { border-color:var(--accent); }
   </style>
 </head>
 <body>
@@ -160,6 +125,7 @@
       oninput="checkMobileCode(this.value)">
   </div>
 
+  <!-- AUTH MODAL -->
   <div id="authModal" style="display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.85);align-items:center;justify-content:center">
     <div style="background:var(--surface);border:1px solid var(--border-hi);padding:2.5rem;width:100%;max-width:360px">
       <div id="authTitle" style="font-family:'Cormorant',serif;font-weight:300;font-size:1.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);margin-bottom:0.3rem">Entrar</div>
@@ -180,6 +146,22 @@
     </div>
   </div>
 
+  <!-- DM MODAL (overlay) -->
+  <div id="dmModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.85);align-items:center;justify-content:center">
+    <div style="background:var(--surface);border:1px solid var(--border-hi);width:100%;max-width:480px;height:600px;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border)">
+        <span id="dmTitle" style="font-family:'Syne Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;color:var(--text-2);flex:1;text-transform:uppercase">DM</span>
+        <button onclick="closeDM()" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;cursor:pointer">✕</button>
+      </div>
+      <div id="dmMessages" style="flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0.6rem"></div>
+      <div style="display:flex;gap:0.75rem;padding:0.85rem 1.25rem;border-top:1px solid var(--border)">
+        <input id="dmInput" type="text" placeholder="Mensaje privado…" autocomplete="off" onkeydown="if(event.key==='Enter')sendDM()" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border-hi);color:var(--text);font-family:'Syne',sans-serif;font-size:0.83rem;padding:0.3rem 0;outline:none">
+        <button onclick="sendDM()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
   <div class="app" id="mainApp" style="display:none">
     <section class="hero">
       <div class="hero-wordmark">Game Hub ∙ V1</div>
@@ -196,19 +178,6 @@
       </div>
       <div class="hint">↓ Scroll para ver los juegos</div>
     </section>
-    <div class="dm-modal" id="dmModal">
-      <div class="dm-box">
-        <div class="dm-header">
-          <span class="dm-title" id="dmTitle">DM</span>
-          <button onclick="closeDM()" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;cursor:pointer">✕</button>
-        </div>
-        <div class="dm-messages" id="dmMessages"></div>
-        <div class="dm-input-row">
-          <input class="dm-input" id="dmInput" type="text" placeholder="Mensaje privado…" autocomplete="off" onkeydown="if(event.key==='Enter')sendDM()">
-          <button onclick="sendDM()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer">Enviar</button>
-        </div>
-      </div>
-    </div>
 
     <div class="tabs-bar">
       <button class="tab-btn active" onclick="switchTab('html')">Juegos HTML</button>
@@ -218,14 +187,16 @@
       <button class="tab-btn" onclick="switchTab('ia')">IA</button>
     </div>
 
+    <!-- TAB: HTML GAMES -->
     <div class="tab-panel active" id="tab-html">
       <div class="file-search-row">
         <input class="file-search" id="searchHtml" type="text" placeholder="Buscar juego…" oninput="renderHtmlGames()" autocomplete="off">
         <span class="file-search-count" id="countHtmlVisible"></span>
       </div>
-      <div class="file-list" id="htmlList"></div>
+      <div id="htmlList"></div>
     </div>
 
+    <!-- TAB: LINKS -->
     <div class="tab-panel" id="tab-links">
       <div class="file-search-row">
         <input class="file-search" id="searchLinks" type="text" placeholder="Buscar link…" oninput="renderLinks()" autocomplete="off">
@@ -234,105 +205,104 @@
       <div class="links-grid" id="linksList"></div>
     </div>
 
+    <!-- TAB: CHAT -->
     <div class="tab-panel" id="tab-chat">
-  <div style="display:flex;gap:0;border-top:1px solid var(--border);min-height:600px">
-
-    <!-- Sidebar canales -->
-    <div style="width:180px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column">
-      <div style="padding:0.75rem 1rem;font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        Canales
-        <button id="btnAddChannel" onclick="promptAddChannel()" style="display:none;background:none;border:none;color:var(--accent);font-size:1rem;cursor:pointer;line-height:1">+</button>
-      </div>
-      <div id="channelList" style="flex:1;overflow-y:auto;padding:0.5rem 0"></div>
-    </div>
-
-    <!-- Centro mensajes -->
-    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
-      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border)">
-        <span style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-3)">#</span>
-        <span id="activeChannelName" style="font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2);flex:1">general</span>
-        <div id="chatUserBadge" style="display:none;font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-2);gap:0.5rem;align-items:center">
-          <strong id="chatUserName" style="color:var(--accent-2)"></strong>
-          <input id="avatarInput" type="file" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
-          <div id="avatarPreview" onclick="document.getElementById('avatarInput').click()" style="width:28px;height:28px;border-radius:50%;background:var(--border-hi);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-3);border:1px solid var(--border-hi)">+</div>
-          <button onclick="fbLogout()" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;cursor:pointer">Salir</button>
+      <div style="display:flex;gap:0;border-top:1px solid var(--border);min-height:600px">
+        <!-- Sidebar canales -->
+        <div style="width:180px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column">
+          <div style="padding:0.75rem 1rem;font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            Canales
+            <button id="btnAddChannel" onclick="promptAddChannel()" style="display:none;background:none;border:none;color:var(--accent);font-size:1rem;cursor:pointer;line-height:1">+</button>
+          </div>
+          <div id="channelList" style="flex:1;overflow-y:auto;padding:0.5rem 0"></div>
+        </div>
+        <!-- Centro mensajes -->
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border)">
+            <span style="font-family:'Syne Mono',monospace;font-size:0.65rem;color:var(--text-3)">#</span>
+            <span id="activeChannelName" style="font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2);flex:1">general</span>
+            <div id="chatUserBadge" style="display:none;font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-2);gap:0.5rem;align-items:center">
+              <strong id="chatUserName" style="color:var(--accent-2)"></strong>
+              <input id="avatarInput" type="file" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+              <div id="avatarPreview" onclick="document.getElementById('avatarInput').click()" style="width:28px;height:28px;border-radius:50%;background:var(--border-hi);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-3);border:1px solid var(--border-hi)">+</div>
+              <button onclick="fbLogout()" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;cursor:pointer">Salir</button>
+            </div>
+          </div>
+          <div id="chatMessages" style="flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.6rem;height:460px">
+            <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase">
+              <span>Inicia sesión para chatear</span>
+              <button onclick="openAuth()" style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.25rem;border:1px solid rgba(143,140,232,0.4);background:rgba(143,140,232,0.08);color:var(--accent);cursor:pointer">Entrar / Registrarse</button>
+            </div>
+          </div>
+          <div id="chatInputRow" style="display:none;border-top:1px solid var(--border);background:var(--surface);gap:0.75rem;padding:0.85rem 1.25rem;flex-shrink:0">
+            <input id="imgInput" type="file" accept="image/*" style="display:none" onchange="sendImg(this)">
+            <button onclick="document.getElementById('imgInput').click()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;padding:0.3rem 0.6rem;border:1px solid var(--border-hi);background:transparent;color:var(--text-3);cursor:pointer">📷</button>
+            <input id="chatInput" type="text" placeholder="Escribe un mensaje…" autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
+            <button onclick="sendMsg()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer">Enviar</button>
+          </div>
+        </div>
+        <!-- Sidebar usuarios online -->
+        <div style="width:150px;flex-shrink:0;border-left:1px solid var(--border)">
+          <div style="padding:0.75rem 1rem;font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border)">Online</div>
+          <div id="onlineUsers" style="padding:0.5rem 0;display:flex;flex-direction:column;gap:0.25rem"></div>
         </div>
       </div>
-      <div id="chatMessages" style="flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.6rem;height:460px">
-        <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase">
-          <span>Inicia sesión para chatear</span>
-          <button onclick="openAuth()" style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.25rem;border:1px solid rgba(143,140,232,0.4);background:rgba(143,140,232,0.08);color:var(--accent);cursor:pointer">Entrar / Registrarse</button>
-        </div>
-      </div>
-      <div id="chatInputRow" style="display:none;border-top:1px solid var(--border);background:var(--surface);gap:0.75rem;padding:0.85rem 1.25rem;flex-shrink:0">
-        <input id="imgInput" type="file" accept="image/*" style="display:none" onchange="sendImg(this)">
-        <button onclick="document.getElementById('imgInput').click()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;padding:0.3rem 0.6rem;border:1px solid var(--border-hi);background:transparent;color:var(--text-3);cursor:pointer">📷</button>
-        <input id="chatInput" type="text" placeholder="Escribe un mensaje…" autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
-        <button onclick="sendMsg()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer">Enviar</button>
-      </div>
     </div>
+    <!-- FIN TAB CHAT -->
 
-    <!-- Sidebar usuarios -->
-    <div style="width:150px;flex-shrink:0;border-left:1px solid var(--border)">
-      <div style="padding:0.75rem 1rem;font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border)">Online</div>
-      <div id="onlineUsers" style="padding:0.5rem 0;display:flex;flex-direction:column;gap:0.25rem"></div>
-    </div>
-
-  </div>
-    <!-- DMs TAB -->
+    <!-- TAB: DMs -->
     <div class="tab-panel" id="tab-dms">
       <div style="display:flex;gap:0;border-top:1px solid var(--border);min-height:600px">
-
-        <!-- Sidebar usuarios -->
+        <!-- Sidebar usuarios registrados -->
         <div style="width:200px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column">
           <div style="padding:0.75rem 1rem;font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border)">Mensajes Directos</div>
           <div id="dmUserList" style="flex:1;overflow-y:auto;padding:0.5rem 0"></div>
         </div>
-
         <!-- Conversación activa -->
         <div style="flex:1;display:flex;flex-direction:column;min-width:0">
-          <div style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2)" id="dmPanelTitle">Selecciona un usuario</div>
+          <div id="dmPanelTitle" style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2)">Selecciona un usuario</div>
           <div id="dmPanelMessages" style="flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.6rem;height:460px"></div>
           <div id="dmPanelInput" style="display:none;border-top:1px solid var(--border);background:var(--surface);gap:0.75rem;padding:0.85rem 1.25rem;flex-shrink:0">
             <input id="dmPanelText" type="text" placeholder="Mensaje directo…" autocomplete="off" onkeydown="if(event.key==='Enter')sendDMPanel()" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border-hi);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
             <button onclick="sendDMPanel()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer;margin-top:0.5rem">Enviar</button>
           </div>
         </div>
-
       </div>
     </div>
-    <!-- IA TAB -->
+    <!-- FIN TAB DMs -->
+
+    <!-- TAB: IA -->
     <div class="tab-panel" id="tab-ia">
-        <div id="aiKeySetup" style="padding:3rem 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.5rem">
-  <div style="font-family:'Cormorant',serif;font-weight:300;font-size:1.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2)">Configura la IA</div>
-  <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-3);letter-spacing:0.08em">Necesitas una API key de Groq gratuita</div>
-  <a href="https://console.groq.com" target="_blank" style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--accent);letter-spacing:0.1em">→ Consiguela gratis en console.groq.com</a>
-  <div style="display:flex;gap:0.75rem;align-items:flex-end;width:100%;max-width:500px">
-    <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
-      <span style="font-family:'Syne Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3)">API Key</span>
-      <input id="groqKeyInput" type="password" placeholder="gsk_…" style="background:transparent;border:none;border-bottom:1px solid var(--border-hi);color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.35rem 0;outline:none;width:100%" onkeydown="if(event.key==='Enter')saveGroqKey()">
-    </div>
-    <button onclick="saveGroqKey()" style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.25rem;border:1px solid rgba(143,140,232,0.4);background:rgba(143,140,232,0.08);color:var(--accent);cursor:pointer">Guardar</button>
-  </div>
-</div>
+      <div id="aiKeySetup" style="padding:3rem 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.5rem">
+        <div style="font-family:'Cormorant',serif;font-weight:300;font-size:1.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2)">Configura la IA</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:var(--text-3);letter-spacing:0.08em">Necesitas una API key de Groq gratuita</div>
+        <a href="https://console.groq.com" target="_blank" style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--accent);letter-spacing:0.1em">→ Consíguela gratis en console.groq.com</a>
+        <div style="display:flex;gap:0.75rem;align-items:flex-end;width:100%;max-width:500px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
+            <span style="font-family:'Syne Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3)">API Key</span>
+            <input id="groqKeyInput" type="password" placeholder="gsk_…" style="background:transparent;border:none;border-bottom:1px solid var(--border-hi);color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.35rem 0;outline:none;width:100%" onkeydown="if(event.key==='Enter')saveGroqKey()">
+          </div>
+          <button onclick="saveGroqKey()" style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.25rem;border:1px solid rgba(143,140,232,0.4);background:rgba(143,140,232,0.08);color:var(--accent);cursor:pointer">Guardar</button>
+        </div>
+      </div>
       <div class="ai-section">
         <div class="ai-personas">
           <button class="ai-persona-btn active" onclick="setPersona('general',this)">Asistente</button>
-          <button class="ai-persona-btn" onclick="setPersona('Codigo',this)">Codigo</button>
+          <button class="ai-persona-btn" onclick="setPersona('codi',this)">Código</button>
           <button class="ai-persona-btn" onclick="setPersona('caos',this)">Caos</button>
         </div>
-        <div class="ai-persona-desc" id="aiPersonaDesc">Asistente general. Respon de forma directa i sense rodeos.</div>
+        <div class="ai-persona-desc" id="aiPersonaDesc">Asistente general. Responde de forma directa y sin rodeos.</div>
         <div class="ai-box">
           <div class="ai-topbar">
             <div style="width:5px;height:5px;border-radius:50%;background:#4ade80;box-shadow:0 0 5px #4ade80"></div>
-            <span style="font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2);flex:1" id="aiPersonaName">Asistente</span>
+            <span id="aiPersonaName" style="font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2);flex:1">Asistente</span>
             <span class="ai-model-badge">llama-3.3-70b · Groq</span>
             <button class="ai-clear" onclick="clearAiChat()">Limpiar</button>
           </div>
           <div class="ai-messages" id="aiMessages">
             <div class="ai-msg bot">
               <div class="ai-avatar bot">AI</div>
-              <div class="ai-bubble">Hola! Soy tu asistente. En que te puedo ayudar?</div>
+              <div class="ai-bubble">Hola! Soy tu asistente. ¿En qué te puedo ayudar?</div>
             </div>
           </div>
           <div class="ai-input-row">
@@ -344,7 +314,9 @@
         </div>
       </div>
     </div>
+    <!-- FIN TAB IA -->
 
+    <!-- AÑADIR JUEGO — fuera de todos los tabs -->
     <div class="add-section">
       <div class="add-title">Añadir Juego</div>
       <div class="add-row">
@@ -355,8 +327,8 @@
         <div class="add-field">
           <span class="add-label">Tipo</span>
           <select class="add-select" id="addType">
+            <option value="html">Juego HTML</option>
             <option value="link">Link externo</option>
-            <option value="html">Fitxer HTML (URL)</option>
           </select>
         </div>
         <div class="add-field" style="flex:2">
@@ -369,7 +341,9 @@
 
     <div class="footer">Everything Hub · Runs locally · No history · No traces</div>
   </div>
+  <!-- FIN MAIN APP -->
 
+  <!-- GAME MODAL -->
   <div class="game-modal" id="gameModal">
     <div class="game-topbar">
       <div class="game-topbar-title" id="gameTitle">—</div>
@@ -380,27 +354,30 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- ═══════════════════════════════════════════════════════ SCRIPTS ═══ -->
   <script>
+    // ── Groq key ──
     window.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('groq_key')) {
-    document.getElementById('aiKeySetup').style.display = 'none';
-  }
-});
+      if (localStorage.getItem('groq_key')) {
+        document.getElementById('aiKeySetup').style.display = 'none';
+      }
+    });
     function saveGroqKey() {
-  const key = document.getElementById('groqKeyInput').value.trim();
-  if (!key.startsWith('gsk_')) { showToast('⚠ Key inválida'); return; }
-  localStorage.setItem('groq_key', key);
-  document.getElementById('aiKeySetup').style.display = 'none';
-  document.querySelector('.ai-section > *:not(#aiKeySetup)') // no cal res més
-  showToast('✓ Key guardada');
-  location.reload();
-}
+      const key = document.getElementById('groqKeyInput').value.trim();
+      if (!key.startsWith('gsk_')) { showToast('⚠ Key inválida'); return; }
+      localStorage.setItem('groq_key', key);
+      document.getElementById('aiKeySetup').style.display = 'none';
+      showToast('✓ Key guardada');
+      location.reload();
+    }
+
+    // ── Config ──
     const SECRET_CODE = atob("MjMxMQ==");
     const SECRET_TIME = 3000;
     const REDIRECT_URL = "https://classroom.google.com";
     const SESSION_KEY = "hub_unlocked_v1";
-    const GROQ_KEY = localStorage.getItem('groq_key') || '';
     const GROQ_MODEL = "llama-3.3-70b-versatile";
+    let GROQ_KEY = localStorage.getItem('groq_key') || '';
 
     const DEFAULT_GAMES = {
       html: [
@@ -430,17 +407,24 @@
         desc: "Especialista en programación. Explica código, depura errores y propone soluciones.",
         system: "Eres un experto en programación. Ayudas con código, debugging y arquitectura de software. Da ejemplos prácticos. Usa bloques de código cuando sea necesario. Sé conciso y preciso."
       },
+      caos: {
+        name: "Caos",
+        desc: "Modo caos activado. Respuestas impredecibles y creativas.",
+        system: "Eres un asistente caótico, creativo e impredecible. Responde de formas inesperadas pero útiles. Puedes ser sarcástico, filosófico o absurdo, pero siempre acaba dando una respuesta real."
+      }
     };
 
     let currentPersona = 'general';
     let aiHistory = [];
     let aiTyping = false;
+    let games = { html: [...DEFAULT_GAMES.html], links: [] };
 
-    let games = JSON.parse(localStorage.getItem('hub_games') || 'null') || DEFAULT_GAMES;
-    function saveGames() { localStorage.setItem('hub_games', JSON.stringify(games)); }
-
-    let typed = "", resetTimer = null;
-    function unlock() { clearTimeout(window._redirectTimer); sessionStorage.setItem(SESSION_KEY, "1"); showApp(); }
+    // ── Unlock logic ──
+    function unlock() {
+      clearTimeout(window._redirectTimer);
+      sessionStorage.setItem(SESSION_KEY, "1");
+      showApp();
+    }
     function showApp() {
       document.getElementById("redirecting").classList.add("hidden");
       document.getElementById("mainApp").style.display = "block";
@@ -449,6 +433,7 @@
       showToast("✓ Desbloqueado");
     }
 
+    let typed = "", resetTimer = null;
     document.addEventListener("keydown", (e) => {
       typed += e.key; clearTimeout(resetTimer);
       if (typed.includes(SECRET_CODE)) { typed = ""; unlock(); return; }
@@ -457,8 +442,7 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       sessionStorage.removeItem(SESSION_KEY);
-      if (sessionStorage.getItem(SESSION_KEY)) { showApp(); }
-      else { window._redirectTimer = setTimeout(() => { window.location.replace(REDIRECT_URL); }, 3000); }
+      window._redirectTimer = setTimeout(() => { window.location.replace(REDIRECT_URL); }, 3000);
     });
 
     let tapCount = 0, tapTimer = null;
@@ -471,8 +455,10 @@
       if (val.includes(SECRET_CODE)) { document.getElementById('secretInput').value = ''; unlock(); }
     }
 
+    // ── Render ──
     function renderAll() {
-      renderHtmlGames(); renderLinks();
+      renderHtmlGames();
+      renderLinks();
       document.getElementById("countGames").textContent = games.html.length;
       document.getElementById("countLinks").textContent = games.links.length;
     }
@@ -482,15 +468,15 @@
       const filtered = games.html.filter(g => g.name.toLowerCase().includes(q));
       const container = document.getElementById("htmlList");
       if (filtered.length === 0) {
-        container.innerHTML = `<div style="padding:3rem 0;text-align:center;color:var(--text-3);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;">Ningun Juego HTML añadido todavia</div>`;
+        container.innerHTML = `<div style="padding:3rem 0;text-align:center;color:var(--text-3);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;">Ningún juego añadido todavía</div>`;
       } else {
-      container.innerHTML = filtered.map((g) => `
-        <div class="link-card" onclick="launchGame('${escHtml(g.name)}','${escHtml(g.url)}')">
-          <div class="link-card-badge">URL</div>
-          <div class="link-card-name">${escHtml(g.name)}</div>
-          <div class="link-card-url">${escHtml(g.url)}</div>
-          <button onclick="event.stopPropagation();removeGame('links','${g.key}')" style="align-self:flex-end;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;padding:0.25rem 0.6rem;border:1px solid var(--border-hi);background:transparent;color:var(--text-3);cursor:pointer;border-radius:2px">✕</button>
-        </div>`).join('');
+        container.innerHTML = `<div class="links-grid">${filtered.map(g => `
+          <div class="link-card" onclick="launchGame('${escHtml(g.name)}','${escHtml(g.url)}')">
+            <div class="link-card-badge">HTML</div>
+            <div class="link-card-name">${escHtml(g.name)}</div>
+            <div class="link-card-url">${escHtml(g.url)}</div>
+            ${g.key ? `<button onclick="event.stopPropagation();removeGame('html','${g.key}')" style="align-self:flex-end;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;padding:0.25rem 0.6rem;border:1px solid var(--border-hi);background:transparent;color:var(--text-3);cursor:pointer;border-radius:2px">✕</button>` : ''}
+          </div>`).join('')}</div>`;
       }
       document.getElementById("countHtmlVisible").textContent = q ? `${filtered.length} / ${games.html.length}` : `${games.html.length} Juegos`;
     }
@@ -499,11 +485,12 @@
       const q = document.getElementById("searchLinks").value.toLowerCase();
       const filtered = games.links.filter(g => g.name.toLowerCase().includes(q) || g.url.toLowerCase().includes(q));
       const container = document.getElementById("linksList");
-      container.innerHTML = filtered.map((g) => `
+      container.innerHTML = filtered.map(g => `
         <div class="link-card" onclick="launchGame('${escHtml(g.name)}','${escHtml(g.url)}')">
           <div class="link-card-badge">URL</div>
           <div class="link-card-name">${escHtml(g.name)}</div>
           <div class="link-card-url">${escHtml(g.url)}</div>
+          ${g.key ? `<button onclick="event.stopPropagation();removeGame('links','${g.key}')" style="align-self:flex-end;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:600;padding:0.25rem 0.6rem;border:1px solid var(--border-hi);background:transparent;color:var(--text-3);cursor:pointer;border-radius:2px">✕</button>` : ''}
         </div>`).join('');
       document.getElementById("countLinksVisible").textContent = q ? `${filtered.length} / ${games.links.length}` : `${games.links.length} links`;
     }
@@ -513,12 +500,14 @@
       document.getElementById("gameFrame").src = url;
       document.getElementById("gameModal").classList.add("show");
     }
-    function closeGame() { document.getElementById("gameModal").classList.remove("show"); document.getElementById("gameFrame").src = ""; }
-
-
+    function closeGame() {
+      document.getElementById("gameModal").classList.remove("show");
+      document.getElementById("gameFrame").src = "";
+    }
 
     function switchTab(t) {
-      document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['html','links','chat','dms','ia'][i] === t));
+      const tabs = ['html','links','chat','dms','ia'];
+      document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabs[i] === t));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-'+t).classList.add('active');
     }
@@ -531,14 +520,12 @@
       btn.classList.add('active');
       document.getElementById('aiPersonaDesc').textContent = AI_PERSONAS[p].desc;
       document.getElementById('aiPersonaName').textContent = AI_PERSONAS[p].name;
-      const msgs = document.getElementById('aiMessages');
-      msgs.innerHTML = `<div class="ai-msg bot"><div class="ai-avatar bot">AI</div><div class="ai-bubble">Hola! Soy tu asistente virtual. ¿En que te puedo ayudar? ${AI_PERSONAS[p].name}. ¿En que te puedo ayudar?</div></div>`;
+      document.getElementById('aiMessages').innerHTML = `<div class="ai-msg bot"><div class="ai-avatar bot">AI</div><div class="ai-bubble">Hola! Soy ${AI_PERSONAS[p].name}. ¿En qué te puedo ayudar?</div></div>`;
     }
 
     function clearAiChat() {
       aiHistory = [];
-      const msgs = document.getElementById('aiMessages');
-      msgs.innerHTML = `<div class="ai-msg bot"><div class="ai-avatar bot">AI</div><div class="ai-bubble">Chat limpio. ¿En que te puedo ayudar?</div></div>`;
+      document.getElementById('aiMessages').innerHTML = `<div class="ai-msg bot"><div class="ai-avatar bot">AI</div><div class="ai-bubble">Chat limpio. ¿En qué te puedo ayudar?</div></div>`;
     }
 
     async function sendAiMsg() {
@@ -547,16 +534,14 @@
       const text = input.value.trim();
       if (!text) return;
       input.value = ''; input.style.height = 'auto';
-
       const msgs = document.getElementById('aiMessages');
-      // User bubble
+
       const userDiv = document.createElement('div');
       userDiv.className = 'ai-msg user';
       userDiv.innerHTML = `<div class="ai-avatar usr">Tu</div><div class="ai-bubble">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`;
       msgs.appendChild(userDiv);
       msgs.scrollTop = msgs.scrollHeight;
 
-      // Thinking
       const thinkDiv = document.createElement('div');
       thinkDiv.className = 'ai-msg bot';
       thinkDiv.innerHTML = `<div class="ai-avatar bot">AI</div><div class="ai-thinking">pensando…</div>`;
@@ -565,7 +550,6 @@
 
       aiTyping = true;
       document.getElementById('aiSendBtn').disabled = true;
-
       aiHistory.push({ role: 'user', content: text });
 
       try {
@@ -574,18 +558,14 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
           body: JSON.stringify({
             model: GROQ_MODEL,
-            messages: [
-              { role: 'system', content: AI_PERSONAS[currentPersona].system },
-              ...aiHistory
-            ],
+            messages: [{ role: 'system', content: AI_PERSONAS[currentPersona].system }, ...aiHistory],
             max_tokens: 1024,
             temperature: currentPersona === 'caos' ? 0.9 : 0.7
           })
         });
         const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || 'Error: no hi ha resposta';
+        const reply = data.choices?.[0]?.message?.content || 'Error: sin respuesta';
         aiHistory.push({ role: 'assistant', content: reply });
-
         thinkDiv.innerHTML = `<div class="ai-avatar bot">AI</div><div class="ai-bubble">${reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
       } catch(e) {
         thinkDiv.innerHTML = `<div class="ai-avatar bot">AI</div><div class="ai-bubble" style="color:var(--red)">Error de conexión con Groq.</div>`;
@@ -596,63 +576,347 @@
       msgs.scrollTop = msgs.scrollHeight;
     }
 
+    // ── Toast ──
     function showToast(msg) {
-      const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.classList.add("show");
       setTimeout(() => t.classList.remove("show"), 2200);
     }
-    let dmUnsubscribe = null;
-let currentDMUser = null;
 
-function getDMKey(a, b) {
-  return [a, b].sort().join('__');
-}
+    // ── DM modal (desde chat) ──
+    let currentDMUser = null;
+    function getDMKey(a, b) { return [a, b].sort().join('__'); }
 
-function openDM(otherUser) {
-  const me = sessionStorage.getItem('hub_chat_user');
-  if (!me) { showToast('Inicia sesión primero'); return; }
-  if (me === otherUser) return;
-  currentDMUser = otherUser;
-  document.getElementById('dmTitle').textContent = '💬 ' + otherUser;
-  document.getElementById('dmMessages').innerHTML = '';
-  document.getElementById('dmModal').classList.add('show');
-}
+    function openDM(otherUser) {
+      const me = sessionStorage.getItem('hub_chat_user');
+      if (!me) { showToast('Inicia sesión primero'); return; }
+      if (me === otherUser) return;
+      currentDMUser = otherUser;
+      document.getElementById('dmTitle').textContent = '💬 ' + otherUser;
+      document.getElementById('dmMessages').innerHTML = '';
+      document.getElementById('dmModal').style.display = 'flex';
+      // Cargar mensajes del DM
+      const key = getDMKey(me, otherUser);
+      if (window._fbDb) {
+        const { ref, onChildAdded } = window._fbFns;
+        onChildAdded(ref(window._fbDb, 'dms/' + key), snap => {
+          const d = snap.val();
+          const isOwn = d.from === me;
+          renderDMMessage(document.getElementById('dmMessages'), d, isOwn);
+        });
+      }
+    }
+    function closeDM() {
+      document.getElementById('dmModal').style.display = 'none';
+      currentDMUser = null;
+    }
+    window.openDM = openDM;
+    window.closeDM = closeDM;
 
-window.openDM = openDM;
-window.closeDM = () => { document.getElementById('dmModal').classList.remove('show'); currentDMUser = null; };
+    document.getElementById('dmModal').addEventListener('click', function(e) {
+      if (e.target === this) closeDM();
+    });
+
+    function renderDMMessage(container, d, isOwn) {
+      const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
+      const div = document.createElement('div');
+      div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
+      div.innerHTML = `
+        <div style="width:24px;height:24px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace">${d.from.slice(0,2).toUpperCase()}</div>
+        <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
+          <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img ? `<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">` : d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${time}</div>
+        </div>`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    window.sendDM = async () => {
+      const input = document.getElementById('dmInput');
+      const text = input.value.trim();
+      if (!text || !currentDMUser || !window._fbAuth?.currentUser) return;
+      input.value = '';
+      const me = window._fbAuth.currentUser.displayName || window._fbAuth.currentUser.email;
+      const COLORS = ['#8f8ce8','#c9a84c','#4ade80','#e87070','#b8b5ff','#60a5fa'];
+      const col = n => { let h=0; for(let c of n) h+=c.charCodeAt(0); return COLORS[h%COLORS.length]; };
+      const key = getDMKey(me, currentDMUser);
+      const { ref, push } = window._fbFns;
+      await push(ref(window._fbDb, 'dms/' + key), { text, from: me, color: col(me), ts: Date.now() });
+    };
+
     function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    document.addEventListener("keydown", e => { if (e.key === "Escape") closeGame(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") { closeGame(); document.getElementById('authModal').style.display='none'; } });
+
+    window.openImg = (src) => {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+      overlay.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px">`;
+      overlay.onclick = () => overlay.remove();
+      document.body.appendChild(overlay);
+    };
   </script>
 
+  <!-- ═══════════════════════════════════════ FIREBASE MODULE ═══════════ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    window.sendImg = async (input) => {
-      const file = input.files[0];
-      const u = auth.currentUser;
-      if (!file || !u) return;
-      showToast('⏳ Subiendo imagen…');
-      try {
-        const fd = new FormData();
-        fd.append('file', file);
-        fd.append('upload_preset', 'hub_uploads');
-        fd.append('quality', '85');
-        const res = await fetch('https://api.cloudinary.com/v1_1/dvppe50ze/image/upload', {
-          method: 'POST', body: fd
-        });
-        const data = await res.json();
-        const url = data.secure_url;
-        const name = u.displayName || u.email;
-        await push(ref(db, 'channelMessages/' + activeChannel), {
-          text: '', img: url, name, color: col(name),
-          avatar: u._avatar||'', ts: Date.now()
-        });
-        showToast('✓ Imagen enviada');
-      } catch(e) {
-        showToast('⚠ Error al subir imagen');
+    import { getDatabase, ref, push, onChildAdded, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const app = initializeApp({
+      apiKey:"AIzaSyCvc6ukKAVhu_TCPGJ0sZuSDLweH4TNKIQ",
+      authDomain:"chat-fde53.firebaseapp.com",
+      databaseURL:"https://chat-fde53-default-rtdb.firebaseio.com",
+      projectId:"chat-fde53",
+      storageBucket:"chat-fde53.firebasestorage.app",
+      messagingSenderId:"1094247573601",
+      appId:"1:1094247573601:web:7f992b5fb299316c832220"
+    });
+    const auth = getAuth(app);
+    const db   = getDatabase(app);
+
+    // Exponer para el script global
+    window._fbAuth = auth;
+    window._fbDb   = db;
+    window._fbFns  = { ref, push, onChildAdded, set, onValue, remove };
+
+    const COLORS = ['#8f8ce8','#c9a84c','#4ade80','#e87070','#b8b5ff','#60a5fa'];
+    const ADMIN_USER = 'Gooomezzz';
+    const col = n => { let h=0; for(let c of n) h+=c.charCodeAt(0); return COLORS[h%COLORS.length]; };
+
+    let activeChannel = 'general';
+    let currentChannels = [];
+    let activeDMUser = null;
+    let bannedUsers = new Set();
+
+    // ── Juegos desde Firebase ──
+    onValue(ref(db, 'games/html'), snap => {
+      games.html = snap.val()
+        ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k}))
+        : [...DEFAULT_GAMES.html];
+      renderAll();
+    });
+    onValue(ref(db, 'games/links'), snap => {
+      games.links = snap.val()
+        ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k}))
+        : [];
+      renderAll();
+    });
+
+    // ── Channels ──
+    function renderChannels(channels) {
+      const list = document.getElementById('channelList');
+      list.innerHTML = '';
+      channels.forEach(ch => {
+        const isActive = ch.id === activeChannel;
+        const btn = document.createElement('div');
+        btn.style.cssText = `display:flex;align-items:center;gap:0.5rem;padding:0.4rem 1rem;cursor:pointer;font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;color:${isActive?'var(--text)':'var(--text-3)'};background:${isActive?'rgba(143,140,232,0.08)':'transparent'};border-left:2px solid ${isActive?'var(--accent)':'transparent'}`;
+        btn.innerHTML = `<span style="color:var(--text-3)">#</span> ${ch.name}`;
+        btn.onclick = () => switchChannel(ch.id, ch.name);
+        list.appendChild(btn);
+      });
+    }
+
+    function switchChannel(id, name) {
+      activeChannel = id;
+      document.getElementById('activeChannelName').textContent = name;
+      document.getElementById('chatMessages').innerHTML = '';
+      loadChannelMessages(id);
+      renderChannels(currentChannels);
+    }
+
+    onValue(ref(db, 'channels'), snap => {
+      const data = snap.val();
+      if (data) {
+        currentChannels = Object.entries(data).map(([id, v]) => ({ id, ...v }));
+      } else {
+        set(ref(db, 'channels/general'), { name: 'general', order: 0 });
+        currentChannels = [{ id: 'general', name: 'general', order: 0 }];
       }
-      input.value = '';
+      currentChannels.sort((a,b) => (a.order||0)-(b.order||0));
+      renderChannels(currentChannels);
+    });
+
+    window.promptAddChannel = () => {
+      const name = prompt('Nombre del canal:');
+      if (!name?.trim()) return;
+      const id = name.trim().toLowerCase().replace(/[^a-z0-9]/g, '-');
+      set(ref(db, 'channels/' + id), { name: name.trim(), order: currentChannels.length });
+      showToast('✓ Canal #' + name.trim() + ' creado');
     };
+
+    function loadChannelMessages(channelId) {
+      const msgs = document.getElementById('chatMessages');
+      const loggedName = sessionStorage.getItem('hub_chat_user');
+      if (!loggedName) return;
+      onChildAdded(ref(db, 'channelMessages/' + channelId), snap => {
+        const d = snap.val();
+        const isOwn = loggedName === d.name;
+        const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
+        const isAdmin = d.name === ADMIN_USER;
+        const showBan = loggedName === ADMIN_USER && !isOwn;
+        const div = document.createElement('div');
+        div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
+        div.innerHTML = `
+          <div style="width:24px;height:24px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace;background:${d.color}">${d.avatar?`<img src="${d.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`:d.name.slice(0,2).toUpperCase()}</div>
+          <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
+            <div style="display:flex;align-items:center;gap:0.4rem;${isOwn?'flex-direction:row-reverse':''}">
+              <span style="font-size:0.6rem;color:var(--text-2)">${d.name}</span>
+              ${isAdmin?'<span style="font-size:0.5rem;background:var(--gold);color:#000;padding:1px 5px;border-radius:2px;font-weight:700">👑 ADMIN</span>':''}
+              ${showBan?`<button onclick="banUser('${d.name}')" style="font-size:0.5rem;background:var(--red);color:#fff;border:none;padding:1px 5px;border-radius:2px;cursor:pointer">BAN</button>`:''}
+              ${!isOwn?`<button onclick="openDM('${d.name}')" style="font-size:0.5rem;background:rgba(143,140,232,0.2);color:var(--accent);border:none;padding:1px 5px;border-radius:2px;cursor:pointer">DM</button>`:''}
+            </div>
+            <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img?`<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">`:d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${d.name} · ${time}</div>
+          </div>`;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+      });
+    }
+
+    onValue(ref(db, 'bans'), snap => {
+      bannedUsers = new Set();
+      if (snap.val()) Object.keys(snap.val()).forEach(k => bannedUsers.add(snap.val()[k]));
+    });
+
+    window.banUser = async (name) => {
+      if (!confirm('¿Banear a ' + name + '?')) return;
+      await push(ref(db, 'bans'), name);
+      showToast('✓ ' + name + ' baneado');
+    };
+
+    // ── Auth ──
+    window.openAuth = () => { document.getElementById('authModal').style.display = 'flex'; };
+    window.toggleAuthMode = () => {
+      authMode = authMode === 'login' ? 'register' : 'login';
+      const l = authMode === 'login';
+      document.getElementById('authTitle').textContent      = l ? 'Entrar' : 'Registrarse';
+      document.getElementById('authSub').textContent        = l ? 'Accede al chat' : 'Crea tu cuenta';
+      document.getElementById('authSubmitBtn').textContent  = l ? 'Entrar' : 'Crear cuenta';
+      document.getElementById('authSwitchText').textContent = l ? 'No tienes cuenta?' : '¿Ya tienes cuenta?';
+      document.getElementById('authSwitchLink').textContent = l ? 'Regístrate' : 'Inicia sesión';
+      document.getElementById('authError').textContent = '';
+    };
+    let authMode = 'login';
+    window.authSubmit = async () => {
+      const user = document.getElementById('authUser').value.trim();
+      const pass = document.getElementById('authPass').value;
+      const err  = document.getElementById('authError');
+      err.textContent = '';
+      if (!user || !pass) { err.textContent = 'Rellena todos los campos'; return; }
+      if (pass.length < 6) { err.textContent = 'Mínimo 6 caracteres'; return; }
+      const email = user.toLowerCase().replace(/[^a-z0-9_]/g,'') + '@hub.local';
+      try {
+        if (authMode === 'register') {
+          const c = await createUserWithEmailAndPassword(auth, email, pass);
+          await updateProfile(c.user, { displayName: user });
+          // ✅ Registrar usuario en /users para que aparezca en DMs
+          await set(ref(db, 'users/' + user), { name: user, color: col(user) });
+        } else {
+          await signInWithEmailAndPassword(auth, email, pass);
+        }
+        document.getElementById('authModal').style.display = 'none';
+      } catch(e) {
+        const msgs = {
+          'auth/email-already-in-use': 'Este usuario ya existe',
+          'auth/invalid-credential': 'Usuario o contraseña incorrectos',
+          'auth/too-many-requests': 'Demasiados intentos'
+        };
+        err.textContent = msgs[e.code] || 'Error inesperado';
+      }
+    };
+    window.fbLogout = () => signOut(auth);
+
+    // ── Chat ──
+    window.sendMsg = async () => {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      const u = auth.currentUser;
+      if (!text || !u) return;
+      input.value = '';
+      const name = u.displayName || u.email;
+      if (bannedUsers.has(name)) { alert('Has sido baneado del chat.'); return; }
+      await push(ref(db, 'channelMessages/' + activeChannel), {
+        text, img: '', name, color: col(name), avatar: u._avatar||'', ts: Date.now()
+      });
+    };
+
+    // ── Añadir / eliminar juego ──
+    window.addGame = () => {
+      const name = document.getElementById("addName").value.trim();
+      const type = document.getElementById("addType").value;
+      const url  = document.getElementById("addUrl").value.trim();
+      if (!name || !url) { showToast("⚠ Rellena todos los campos"); return; }
+      push(ref(db, 'games/' + (type === 'html' ? 'html' : 'links')), { name, url });
+      document.getElementById("addName").value = "";
+      document.getElementById("addUrl").value = "";
+      showToast(`✓ "${name}" añadido para todos`);
+    };
+    window.removeGame = (type, key) => {
+      const me = sessionStorage.getItem('hub_chat_user');
+      if (me !== ADMIN_USER) { showToast('⚠ Solo el admin puede eliminar juegos'); return; }
+      if (!confirm("¿Eliminar este juego?")) return;
+      set(ref(db, 'games/' + type + '/' + key), null);
+    };
+
+    // ── Auth state ──
+    onAuthStateChanged(auth, u => {
+      const badge = document.getElementById('chatUserBadge');
+      const empty = document.getElementById('chatEmpty');
+      const row   = document.getElementById('chatInputRow');
+      if (u) {
+        const name = u.displayName || u.email;
+        // Asegurarse de que el usuario esté en /users (por si ya existía antes del fix)
+        set(ref(db, 'users/' + name), { name, color: col(name) });
+
+        const avatarEl = document.getElementById('avatarPreview');
+        onValue(ref(db, 'avatars/' + u.uid), snap => {
+          if (snap.val()) {
+            avatarEl.innerHTML = `<img src="${snap.val()}" style="width:100%;height:100%;object-fit:cover">`;
+            u._avatar = snap.val();
+          } else {
+            avatarEl.innerHTML = name.slice(0,2).toUpperCase();
+            u._avatar = '';
+          }
+        });
+
+        document.getElementById('chatUserName').textContent = name;
+        sessionStorage.setItem('hub_chat_user', name);
+
+        // Online presence
+        const userRef = ref(db, 'online/' + name);
+        set(userRef, { name, color: col(name), ts: Date.now() });
+        window.addEventListener('beforeunload', () => set(userRef, null));
+
+        // Usuarios online en sidebar
+        onValue(ref(db, 'online'), snap => {
+          const container = document.getElementById('onlineUsers');
+          if (!container) return;
+          container.innerHTML = '';
+          if (!snap.val()) return;
+          Object.values(snap.val()).forEach(ou => {
+            const isMe = ou.name === name;
+            const btn = document.createElement('div');
+            btn.style.cssText = `display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border:1px solid ${isMe?'rgba(143,140,232,0.3)':'var(--border-hi)'};cursor:${isMe?'default':'pointer'};border-radius:2px;background:${isMe?'rgba(143,140,232,0.08)':'transparent'}`;
+            btn.innerHTML = `<div style="width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 4px #4ade80"></div><span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:${isMe?'var(--accent)':'var(--text-2)'};letter-spacing:0.06em">${ou.name}</span>`;
+            if (!isMe) btn.onclick = () => openDM(ou.name);
+            container.appendChild(btn);
+          });
+        });
+
+        badge.style.display = 'flex';
+        row.style.display   = 'flex';
+        empty.style.display = 'none';
+        document.getElementById('btnAddChannel').style.display = name === ADMIN_USER ? 'block' : 'none';
+        loadChannelMessages(activeChannel);
+        loadDMUserList();
+      } else {
+        badge.style.display = 'none';
+        row.style.display   = 'none';
+        empty.style.display = 'flex';
+      }
+    });
+
+    // ── Upload avatar ──
     window.uploadAvatar = async (input) => {
       const file = input.files[0];
       if (!file || !auth.currentUser) return;
@@ -668,269 +932,43 @@ window.closeDM = () => { document.getElementById('dmModal').classList.remove('sh
       showToast('✓ Foto actualizada');
     };
 
-
-    const app  = initializeApp({ apiKey:"AIzaSyCvc6ukKAVhu_TCPGJ0sZuSDLweH4TNKIQ", authDomain:"chat-fde53.firebaseapp.com", databaseURL:"https://chat-fde53-default-rtdb.firebaseio.com", projectId:"chat-fde53", storageBucket:"chat-fde53.firebasestorage.app", messagingSenderId:"1094247573601", appId:"1:1094247573601:web:7f992b5fb299316c832220" });
-    const auth = getAuth(app);
-    const db   = getDatabase(app);
-    onValue(ref(db, 'games/html'), snap => {
-      games.html = snap.val() ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k})) : [...DEFAULT_GAMES.html];
-      renderAll();
-    });
-    onValue(ref(db, 'games/links'), snap => {
-      games.links = snap.val() ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k})) : [];
-      renderAll();
-    });
-    const COLORS = ['#8f8ce8','#c9a84c','#4ade80','#e87070','#b8b5ff','#60a5fa'];
-    const ADMIN_USER = 'Gooomezzz';
-    let activeChannel = 'general';
-    let channelUnsubscribe = null;
-
-    function renderChannels(channels) {
-      const list = document.getElementById('channelList');
-      list.innerHTML = '';
-      channels.forEach(ch => {
-        const btn = document.createElement('div');
-        const isActive = ch.id === activeChannel;
-        btn.style.cssText = `display:flex;align-items:center;gap:0.5rem;padding:0.4rem 1rem;cursor:pointer;font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;color:${isActive ? 'var(--text)' : 'var(--text-3)'};background:${isActive ? 'rgba(143,140,232,0.08)' : 'transparent'};border-left:2px solid ${isActive ? 'var(--accent)' : 'transparent'}`;
-        btn.innerHTML = `<span style="color:var(--text-3)">#</span> ${ch.name}`;
-        btn.onclick = () => switchChannel(ch.id, ch.name);
-        list.appendChild(btn);
-      });
-    }
-
-    function switchChannel(id, name) {
-      activeChannel = id;
-      document.getElementById('activeChannelName').textContent = name;
-      document.getElementById('chatMessages').innerHTML = '';
-      msgsLoaded = false;
-      loadChannelMessages(id);
-      renderChannels(currentChannels);
-    }
-
-    let currentChannels = [];
-
-    onValue(ref(db, 'channels'), snap => {
-      const data = snap.val();
-      if (data) {
-        currentChannels = Object.entries(data).map(([id, v]) => ({ id, ...v }));
-      } else {
-        // Crear canal general por defecto
-        set(ref(db, 'channels/general'), { name: 'general', order: 0 });
-        currentChannels = [{ id: 'general', name: 'general', order: 0 }];
-      }
-      currentChannels.sort((a, b) => (a.order || 0) - (b.order || 0));
-      renderChannels(currentChannels);
-    });
-
-    window.promptAddChannel = () => {
-      const name = prompt('Nombre del canal:');
-      if (!name || !name.trim()) return;
-      const id = name.trim().toLowerCase().replace(/[^a-z0-9]/g, '-');
-      const order = currentChannels.length;
-      set(ref(db, 'channels/' + id), { name: name.trim(), order });
-      showToast('✓ Canal #' + name.trim() + ' creado');
-    };
-    function loadChannelMessages(channelId) {
-      const msgs = document.getElementById('chatMessages');
-      const loggedName = sessionStorage.getItem('hub_chat_user');
-      if (!loggedName) return;
-      onChildAdded(ref(db, 'channelMessages/' + channelId), snap => {
-        const d = snap.val();
-        const isOwn = loggedName === d.name;
-        const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
-        const div = document.createElement('div');
-        div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
-        const isAdmin = d.name === ADMIN_USER;
-        const showBan = loggedName === ADMIN_USER && !isOwn;
-        div.innerHTML = `
-          <div style="width:24px;height:24px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace;background:${d.color}">${d.avatar ? `<img src="${d.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:2px">` : d.name.slice(0,2).toUpperCase()}</div>
-          <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
-            <div style="display:flex;align-items:center;gap:0.4rem;${isOwn?'flex-direction:row-reverse':''}">
-              <span style="font-size:0.6rem;color:var(--text-2)">${d.name}</span>
-              ${isAdmin ? '<span style="font-size:0.5rem;background:var(--gold);color:#000;padding:1px 5px;border-radius:2px;font-weight:700">👑 ADMIN</span>' : ''}
-              ${showBan ? '<button onclick="banUser(\''+d.name+'\')" style="font-size:0.5rem;background:var(--red);color:#fff;border:none;padding:1px 5px;border-radius:2px;cursor:pointer">BAN</button>' : ''}
-              ${!isOwn ? '<button onclick="openDM(\''+d.name+'\')" style="font-size:0.5rem;background:rgba(143,140,232,0.2);color:var(--accent);border:none;padding:1px 5px;border-radius:2px;cursor:pointer">DM</button>' : ''}
-            </div>
-            <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img ? `<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">` : d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
-            <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${d.name} · ${time}</div>
-          </div>`;
-        msgs.appendChild(div);
-        msgs.scrollTop = msgs.scrollHeight;
-      });
-    }
-    let bannedUsers = new Set();
-    onValue(ref(db, 'bans'), snap => {
-      bannedUsers = new Set();
-      if (snap.val()) Object.keys(snap.val()).forEach(k => bannedUsers.add(snap.val()[k]));
-    });
-    window.banUser = async (name) => {
-      if (!confirm('¿Banear a ' + name + '?')) return;
-      await push(ref(db, 'bans'), name);
-    };
-    const col = n => { let h=0; for(let c of n) h+=c.charCodeAt(0); return COLORS[h%COLORS.length]; };
-    let authMode = 'login', msgsLoaded = false;
-
-    window.openAuth = () => { document.getElementById('authModal').style.display='flex'; };
-    window.toggleAuthMode = () => {
-      authMode = authMode==='login'?'register':'login';
-      const l = authMode==='login';
-      document.getElementById('authTitle').textContent     = l?'Entrar':'Registrarse';
-      document.getElementById('authSub').textContent       = l?'Accede al chat':'Crea tu cuenta';
-      document.getElementById('authSubmitBtn').textContent = l?'Entrar':'Crear cuenta';
-      document.getElementById('authSwitchText').textContent= l?'No tienes cuenta?':'Ya tienes cuenta?';
-      document.getElementById('authSwitchLink').textContent= l?"Registrate":'Inicia sessión';
-      document.getElementById('authError').textContent='';
-    };
-    window.authSubmit = async () => {
-      const user=document.getElementById('authUser').value.trim();
-      const pass=document.getElementById('authPass').value;
-      const err=document.getElementById('authError');
-      err.textContent='';
-      if(!user||!pass){err.textContent='Rellena todos los campos';return;}
-      if(pass.length<6){err.textContent='Mínimo 6 caracteres';return;}
-      const email=user.toLowerCase().replace(/[^a-z0-9_]/g,'')+'@hub.local';
-      try {
-        if(authMode==='register'){const c=await createUserWithEmailAndPassword(auth,email,pass);await updateProfile(c.user,{displayName:user});}
-        else await signInWithEmailAndPassword(auth,email,pass);
-        document.getElementById('authModal').style.display='none';
-      } catch(e) {
-        const msgs={'auth/email-already-in-use':'Este usuario ya existe','auth/invalid-credential':'Usuario o contrasenya incorrectos','auth/too-many-requests':'Demasiados intentos'};
-        err.textContent=msgs[e.code]||'Error inesperado';
-      }
-    };
-    window.fbLogout = () => signOut(auth);
-    window.sendDM = async () => {
-  const input = document.getElementById('dmInput');
-  const text = input.value.trim();
-  const u = auth.currentUser;
-  if (!text || !u || !currentDMUser) return;
-  input.value = '';
-  const me = u.displayName || u.email;
-  const key = getDMKey(me, currentDMUser);
-  await push(ref(db, 'dms/' + key), { text, from: me, color: col(me), ts: Date.now() });
-};
-
-// Cargar DMs cuando se abre el modal
-document.getElementById('dmModal').addEventListener('click', function(e) {
-  if (e.target === this) closeDM();
-});
-
-// Observer para cargar mensajes del DM activo
-const dmObserver = new MutationObserver(() => {
-  const modal = document.getElementById('dmModal');
-  if (modal.classList.contains('show') && currentDMUser) {
-    const me = sessionStorage.getItem('hub_chat_user');
-    const key = getDMKey(me, currentDMUser);
-    const msgs = document.getElementById('dmMessages');
-    onChildAdded(ref(db, 'dms/' + key), snap => {
-      const d = snap.val();
-      const isOwn = d.from === me;
-      const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
-      const div = document.createElement('div');
-      div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
-      div.innerHTML = `<div style="width:24px;height:24px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace;background:${d.color}">${d.from.slice(0,2).toUpperCase()}</div><div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}"><div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img ? `<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">` : d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div><div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${time}</div></div>`;
-      msgs.appendChild(div);
-      msgs.scrollTop = msgs.scrollHeight;
-    });
-  }
-});
-dmObserver.observe(document.getElementById('dmModal'), { attributes: true, attributeFilter: ['class'] });
-    window.sendMsg = async () => {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
+    // ── Upload imagen al chat ──
+    window.sendImg = async (input) => {
+      const file = input.files[0];
       const u = auth.currentUser;
-      if (!text || !u) return;
+      if (!file || !u) return;
+      showToast('⏳ Subiendo imagen…');
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', 'hub_uploads');
+        const res = await fetch('https://api.cloudinary.com/v1_1/dvppe50ze/image/upload', { method:'POST', body:fd });
+        const data = await res.json();
+        const url = data.secure_url;
+        const name = u.displayName || u.email;
+        await push(ref(db, 'channelMessages/' + activeChannel), { text:'', img:url, name, color:col(name), avatar:u._avatar||'', ts:Date.now() });
+        showToast('✓ Imagen enviada');
+      } catch(e) { showToast('⚠ Error al subir imagen'); }
       input.value = '';
-      const name = u.displayName || u.email;
-      if (bannedUsers.has(name)) { alert('Has sido baneado del chat.'); return; }
-      await push(ref(db, 'channelMessages/' + activeChannel), {
-        text, img: '', name, color: col(name), avatar: u._avatar||'', ts: Date.now()
-      });
     };
-    window.addGame = () => {
-      const name = document.getElementById("addName").value.trim();
-      const type = document.getElementById("addType").value;
-      const url = document.getElementById("addUrl").value.trim();
-      if (!name || !url) { showToast("⚠ Rellena todos los campos"); return; }
-      push(ref(db, 'games/' + (type === 'html' ? 'html' : 'links')), { name, url });
-      document.getElementById("addName").value = "";
-      document.getElementById("addUrl").value = "";
-      showToast(`✓ "${name}" añadido para todos`);
-    }
-    window.removeGame = (type, key) => {
-      const me = sessionStorage.getItem('hub_chat_user');
-      if (me !== ADMIN_USER) { showToast('⚠ Solo el admin puede eliminar juegos'); return; }
-      if (!confirm("Eliminar este juego?")) return;
-      set(ref(db, 'games/' + type + '/' + key), null);
-    };
-    onAuthStateChanged(auth, u => {
-      const badge=document.getElementById('chatUserBadge');
-      const empty=document.getElementById('chatEmpty');
-      const row=document.getElementById('chatInputRow');
-      const msgs=document.getElementById('chatMessages');
-      if(u){
-        const name=u.displayName||u.email;
-        
-        const avatarEl = document.getElementById('avatarPreview');
-        onValue(ref(db, 'avatars/' + u.uid), snap => {
-          if (snap.val()) {
-            avatarEl.innerHTML = `<img src="${snap.val()}" style="width:100%;height:100%;object-fit:cover">`;
-            u._avatar = snap.val();
-          } else {
-            avatarEl.innerHTML = name.slice(0,2).toUpperCase();
-            u._avatar = '';
-          }
-        });
-        document.getElementById('chatUserName').textContent=name;
-        sessionStorage.setItem('hub_chat_user', name);
-        // Registrar usuario online
-const userRef = ref(db, 'online/' + name);
-set(userRef, { name, color: col(name), ts: Date.now() });
-// Borrar al salir
-window.addEventListener('beforeunload', () => set(userRef, null));
 
-// Escuchar usuarios online
-onValue(ref(db, 'online'), snap => {
-  const container = document.getElementById('onlineUsers');
-  if (!container) return;
-  container.innerHTML = '';
-  if (!snap.val()) return;
-  Object.values(snap.val()).forEach(u => {
-    const isMe = u.name === name;
-    const btn = document.createElement('div');
-    btn.style.cssText = `display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border:1px solid ${isMe ? 'rgba(143,140,232,0.3)' : 'var(--border-hi)'};cursor:${isMe ? 'default' : 'pointer'};border-radius:2px;background:${isMe ? 'rgba(143,140,232,0.08)' : 'transparent'}`;
-    btn.innerHTML = `<div style="width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 4px #4ade80"></div><span style="font-family:'Syne Mono',monospace;font-size:0.6rem;color:${isMe ? 'var(--accent)' : 'var(--text-2)'};letter-spacing:0.06em">${u.name}</span>`;
-    if (!isMe) btn.onclick = () => openDM(u.name);
-    container.appendChild(btn);
-  });
-});
-        badge.style.display='flex'; row.style.display='flex'; empty.style.display='none';
-        document.getElementById('btnAddChannel').style.display = name === ADMIN_USER ? 'block' : 'none';
-        loadChannelMessages(activeChannel);
-        loadDMUserList();
-            } else { 
-        badge.style.display='none'; 
-        row.style.display='none'; 
-        empty.style.display='flex'; 
-      }
-    });
-
-    document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('authModal').style.display='none'; });
-    let activeDMUser = null;
-
+    // ── DMs tab ──
+    // ✅ FIX: Ahora escucha /users en lugar de un nodo que no existe
     function loadDMUserList() {
       const me = sessionStorage.getItem('hub_chat_user');
       onValue(ref(db, 'users'), snap => {
         const container = document.getElementById('dmUserList');
         if (!container) return;
         container.innerHTML = '';
-        if (!snap.val()) return;
+        if (!snap.val()) { container.innerHTML = '<div style="padding:1rem;font-family:\'Syne Mono\',monospace;font-size:0.6rem;color:var(--text-3);letter-spacing:0.06em">Sin usuarios aún</div>'; return; }
         Object.values(snap.val()).forEach(u => {
           if (u.name === me) return;
           const isActive = u.name === activeDMUser;
           const btn = document.createElement('div');
-          btn.style.cssText = `display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;cursor:pointer;border-left:2px solid ${isActive ? 'var(--accent)' : 'transparent'};background:${isActive ? 'rgba(143,140,232,0.08)' : 'transparent'}`;
-          btn.innerHTML = `<div style="width:28px;height:28px;border-radius:50%;background:${col(u.name)};display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:rgba(255,255,255,0.9);font-family:'Syne Mono',monospace;flex-shrink:0">${u.name.slice(0,2).toUpperCase()}</div><span style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:${isActive ? 'var(--text)' : 'var(--text-2)'};letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name}</span>`;
+          btn.style.cssText = `display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;cursor:pointer;border-left:2px solid ${isActive?'var(--accent)':'transparent'};background:${isActive?'rgba(143,140,232,0.08)':'transparent'}`;
+          btn.innerHTML = `
+            <div style="width:28px;height:28px;border-radius:50%;background:${col(u.name)};display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:rgba(255,255,255,0.9);font-family:'Syne Mono',monospace;flex-shrink:0">${u.name.slice(0,2).toUpperCase()}</div>
+            <span style="font-family:'Syne Mono',monospace;font-size:0.62rem;color:${isActive?'var(--text)':'var(--text-2)'};letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name}</span>`;
           btn.onclick = () => openDMPanel(u.name);
           container.appendChild(btn);
         });
@@ -944,18 +982,12 @@ onValue(ref(db, 'online'), snap => {
       document.getElementById('dmPanelTitle').textContent = '💬 ' + otherUser;
       document.getElementById('dmPanelMessages').innerHTML = '';
       document.getElementById('dmPanelInput').style.display = 'flex';
-      loadDMUserList();
+      loadDMUserList(); // refrescar highlight
       const key = getDMKey(me, otherUser);
       onChildAdded(ref(db, 'dms/' + key), snap => {
         const d = snap.val();
         const isOwn = d.from === me;
-        const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
-        const div = document.createElement('div');
-        div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
-        div.innerHTML = `<div style="width:24px;height:24px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace">${d.from.slice(0,2).toUpperCase()}</div><div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}"><div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img ? `<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">` : d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div><div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${time}</div></div>`;
-        const msgs = document.getElementById('dmPanelMessages');
-        msgs.appendChild(div);
-        msgs.scrollTop = msgs.scrollHeight;
+        renderDMMessage(document.getElementById('dmPanelMessages'), d, isOwn);
       });
     }
 
@@ -968,13 +1000,6 @@ onValue(ref(db, 'online'), snap => {
       const me = u.displayName || u.email;
       const key = getDMKey(me, activeDMUser);
       await push(ref(db, 'dms/' + key), { text, from: me, color: col(me), ts: Date.now() });
-    };
-    window.openImg = (src) => {
-      const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;cursor:zoom-out';
-      overlay.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px">`;
-      overlay.onclick = () => overlay.remove();
-      document.body.appendChild(overlay);
     };
   </script>
 </body>
