@@ -1033,14 +1033,17 @@
     };
 
     // ── Auth state ──
+    let authInitialized = false;
     onAuthStateChanged(auth, u => {
       const badge = document.getElementById('chatUserBadge');
       const empty = document.getElementById('chatEmpty');
       const row   = document.getElementById('chatInputRow');
       if (u) {
         const name = u.displayName || u.email;
-        // Asegurarse de que el usuario esté en /users (por si ya existía antes del fix)
         set(ref(db, 'users/' + name), { name, color: col(name) });
+        // Evitar registrar todos los listeners más de una vez
+        if (authInitialized) return;
+        authInitialized = true;
 
         const avatarEl = document.getElementById('avatarPreview');
         onValue(ref(db, 'avatars/' + u.uid), snap => {
@@ -1110,10 +1113,10 @@
           }
         });
       } else {
+        authInitialized = false;
         badge.style.display = 'none';
         row.style.display   = 'none';
         empty.style.display = 'flex';
-        // Reset listeners para que al volver a iniciar sesión no se dupliquen
         channelListeners = {};
         channelCache = {};
         dmPanelListeners = {};
