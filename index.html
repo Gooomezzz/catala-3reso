@@ -452,7 +452,7 @@
             <div class="file-name">${escHtml(g.name)}</div>
             <div class="file-btns">
               <button class="btn-file launch" onclick="event.stopPropagation();launchGame('${escHtml(g.name)}','${escHtml(g.url)}')">Launch</button>
-              <button class="btn-file" onclick="event.stopPropagation();removeGame('html',${games.html.indexOf(g)})">✕</button>
+              <button class="btn-file" onclick="event.stopPropagation();removeGame('html','${g.key}')">✕</button>
             </div>
           </div>`).join('');
       }
@@ -479,22 +479,7 @@
     }
     function closeGame() { document.getElementById("gameModal").classList.remove("show"); document.getElementById("gameFrame").src = ""; }
 
-    function addGame() {
-      const name = document.getElementById("addName").value.trim();
-      const type = document.getElementById("addType").value;
-      const url = document.getElementById("addUrl").value.trim();
-      if (!name || !url) { showToast("⚠ Rellena todos los campos"); return; }
-      games[type === 'html' ? 'html' : 'links'].push({ name, url });
-      saveGames();
-      document.getElementById("addName").value = "";
-      document.getElementById("addUrl").value = "";
-      renderAll();
-      showToast(`✓ "${name}" añadido`);
-    }
-    function removeGame(type, idx) {
-      if (!confirm("Eliminar este juego?")) return;
-      games[type].splice(idx, 1); saveGames(); renderAll();
-    }
+
 
     function switchTab(t) {
       document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['html','links','chat','ia'][i] === t));
@@ -623,38 +608,37 @@ window.closeDM = () => { document.getElementById('dmModal').classList.remove('sh
       const name = u.displayName || u.email;
       await push(ref(db,'messages'), {
         text: '', img: base64, name, color: col(name),
-        avatar: u.photoURL||'', ts: Date.now()
+        avatar: u._avatar||'', ts: Date.now()
       });
       input.value = '';
     };
     window.uploadAvatar = async (input) => {
       const file = input.files[0];
       if (!file || !auth.currentUser) return;
-      
-      // Comprimir y convertir a base64
       const canvas = document.createElement('canvas');
       const img = new Image();
       img.src = URL.createObjectURL(file);
       await new Promise(r => img.onload = r);
       canvas.width = 64; canvas.height = 64;
       canvas.getContext('2d').drawImage(img, 0, 0, 64, 64);
-      const base64 = canvas.toDataURL('image/jpeg', 0.7);
-      
-      // Guardar en Firebase DB
+      const base64 = canvas.toDataURL('image/jpeg', 0.5);
       await set(ref(db, 'avatars/' + auth.currentUser.uid), base64);
-      await updateProfile(auth.currentUser, { photoURL: base64 });
-      
-      const avatarEl = document.getElementById('avatarPreview');
-      avatarEl.innerHTML = `<img src="${base64}" style="width:100%;height:100%;object-fit:cover">`;
+      document.getElementById('avatarPreview').innerHTML = `<img src="${base64}" style="width:100%;height:100%;object-fit:cover">`;
       showToast('✓ Foto actualizada');
     };
-    import { getStorage, ref as sref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 
     const app  = initializeApp({ apiKey:"AIzaSyCvc6ukKAVhu_TCPGJ0sZuSDLweH4TNKIQ", authDomain:"chat-fde53.firebaseapp.com", databaseURL:"https://chat-fde53-default-rtdb.firebaseio.com", projectId:"chat-fde53", storageBucket:"chat-fde53.firebasestorage.app", messagingSenderId:"1094247573601", appId:"1:1094247573601:web:7f992b5fb299316c832220" });
     const auth = getAuth(app);
     const db   = getDatabase(app);
-    const storage = getStorage(app);
+    onValue(ref(db, 'games/html'), snap => {
+      games.html = snap.val() ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k})) : [...DEFAULT_GAMES.html];
+      renderAll();
+    });
+    onValue(ref(db, 'games/links'), snap => {
+      games.links = snap.val() ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k})) : [];
+      renderAll();
+    });
     const COLORS = ['#8f8ce8','#c9a84c','#4ade80','#e87070','#b8b5ff','#60a5fa'];
     const ADMIN_USER = 'Gooomezzz';
 let bannedUsers = new Set();
@@ -745,9 +729,24 @@ dmObserver.observe(document.getElementById('dmModal'), { attributes: true, attri
   alert('Has sido baneado del chat.');
   return;
 }
-      await push(ref(db,'messages'),{text, img:'', name, color:col(name), avatar:auth.currentUser.photoURL||'', ts:Date.now()});
+      await push(ref(db,'messages'),{text, img:'', name, color:col(name), avatar:auth.currentUser._avatar||'', ts:Date.now()});
     };
-
+    window.addGame = () => {
+      const name = document.getElementById("addName").value.trim();
+      const type = document.getElementById("addType").value;
+      const url = document.getElementById("addUrl").value.trim();
+      if (!name || !url) { showToast("⚠ Rellena todos los campos"); return; }
+      push(ref(db, 'games/' + (type === 'html' ? 'html' : 'links')), { name, url });
+      document.getElementById("addName").value = "";
+      document.getElementById("addUrl").value = "";
+      showToast(`✓ "${name}" añadido para todos`);
+    }
+    window.removeGame = (type, key) => {
+      const me = sessionStorage.getItem('hub_chat_user');
+      if (me !== ADMIN_USER) { showToast('⚠ Solo el admin puede eliminar juegos'); return; }
+      if (!confirm("Eliminar este juego?")) return;
+      set(ref(db, 'games/' + type + '/' + key), null);
+    };
     onAuthStateChanged(auth, u => {
       const badge=document.getElementById('chatUserBadge');
       const empty=document.getElementById('chatEmpty');
@@ -755,12 +754,17 @@ dmObserver.observe(document.getElementById('dmModal'), { attributes: true, attri
       const msgs=document.getElementById('chatMessages');
       if(u){
         const name=u.displayName||u.email;
+        
         const avatarEl = document.getElementById('avatarPreview');
-        if (u.photoURL) {
-          avatarEl.innerHTML = `<img src="${u.photoURL}" style="width:100%;height:100%;object-fit:cover">`;
-        } else {
-          avatarEl.innerHTML = name.slice(0,2).toUpperCase();
-        }
+        onValue(ref(db, 'avatars/' + u.uid), snap => {
+          if (snap.val()) {
+            avatarEl.innerHTML = `<img src="${snap.val()}" style="width:100%;height:100%;object-fit:cover">`;
+            u._avatar = snap.val();
+          } else {
+            avatarEl.innerHTML = name.slice(0,2).toUpperCase();
+            u._avatar = '';
+          }
+        });
         document.getElementById('chatUserName').textContent=name;
         sessionStorage.setItem('hub_chat_user', name);
         // Registrar usuario online
