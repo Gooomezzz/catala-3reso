@@ -819,47 +819,42 @@
         // window._ytKey se setea desde el módulo
 
         window.searchYT = async function() {
+  const q = document.getElementById('ytSearch').value.trim();
+  if (!q) return;
+  const key = window._ytKey;
+  if (!key) { showToast('⚠ No hay YouTube API key'); return; }
+  document.getElementById('ytResults').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-3);font-family:\'Syne Mono\',monospace;font-size:0.7rem;letter-spacing:0.1em">Buscando…</div>';
+  document.getElementById('ytEmpty').style.display = 'none';
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&maxResults=12&type=video&key=${key}`);
+    const data = await res.json();
+    if (!data.items?.length) {
+      document.getElementById('ytResults').innerHTML = '';
+      document.getElementById('ytEmpty').style.display = 'block';
+      document.getElementById('ytEmpty').textContent = 'Sin resultados';
+      return;
+    }
+    document.getElementById('ytResults').innerHTML = data.items.map(item => `
+      <div class="link-card" onclick="window.playYT('${item.id.videoId}')">
+        <img src="${item.snippet.thumbnails.medium.url}" style="width:100%;border-radius:2px;margin-bottom:0.25rem">
+        <div class="link-card-name" style="font-size:0.78rem;line-height:1.4">${escHtml(item.snippet.title)}</div>
+        <div class="link-card-url">${escHtml(item.snippet.channelTitle)}</div>
+      </div>`).join('');
+  } catch(e) {
+    showToast('⚠ Error al buscar');
+  }
+}
 
-        const q = document.getElementById('ytSearch').value.trim();
-        if (!q) return;
-        const key = window._ytKey || YT_API_KEY;
-        if (!key) { showToast('⚠ No hay YouTube API key'); return; }
+window.playYT = function(id) {
+  document.getElementById('ytFrame').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+  document.getElementById('ytPlayer').style.display = 'block';
+  document.getElementById('ytPlayer').scrollIntoView({ behavior: 'smooth' });
+}
 
-        document.getElementById('ytResults').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-3);font-family:\'Syne Mono\',monospace;font-size:0.7rem;letter-spacing:0.1em">Buscando…</div>';
-        document.getElementById('ytEmpty').style.display = 'none';
-
-        try {
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&maxResults=12&type=video&key=${key}`);
-            const data = await res.json();
-
-            if (!data.items?.length) {
-            document.getElementById('ytResults').innerHTML = '';
-            document.getElementById('ytEmpty').style.display = 'block';
-            document.getElementById('ytEmpty').textContent = 'Sin resultados';
-            return;
-            }
-
-            document.getElementById('ytResults').innerHTML = data.items.map(item => `
-            <div class="link-card" onclick="window.playYT('${item.id.videoId}')">
-                <img src="${item.snippet.thumbnails.medium.url}" style="width:100%;border-radius:2px;margin-bottom:0.25rem">
-                <div class="link-card-name" style="font-size:0.78rem;line-height:1.4">${escHtml(item.snippet.title)}</div>
-                <div class="link-card-url">${escHtml(item.snippet.channelTitle)}</div>
-            </div>`).join('');
-        } catch(e) {
-            showToast('⚠ Error al buscar');
-        }
-        }
-
-        window.closeYT = function() {
-        document.getElementById('ytFrame').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-        document.getElementById('ytPlayer').style.display = 'block';
-        document.getElementById('ytPlayer').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function closeYT() {
-        document.getElementById('ytFrame').src = '';
-        document.getElementById('ytPlayer').style.display = 'none';
-        }
+window.closeYT = function() {
+  document.getElementById('ytFrame').src = '';
+  document.getElementById('ytPlayer').style.display = 'none';
+}
   </script>
 
   <!-- ═══════════════════════════════════════ FIREBASE MODULE ═══════════ -->
