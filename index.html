@@ -369,6 +369,15 @@
     <iframe class="game-frame" id="gameFrame" src="" allowfullscreen></iframe>
   </div>
 
+  <!-- CONTEXT MENU -->
+  <div id="ctxMenu" style="display:none;position:fixed;z-index:9000;background:var(--surface);border:1px solid var(--border-hi);min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,0.5);border-radius:3px;overflow:hidden">
+    <div id="ctxUser" style="padding:0.5rem 1rem 0.35rem;font-family:'Syne Mono',monospace;font-size:0.6rem;color:var(--text-3);letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--border)"></div>
+    <div class="ctx-item" onclick="ctxAction('dm')"      style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.78rem;color:var(--text-2)" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background='transparent'">💬 Enviar DM</div>
+    <div class="ctx-item" onclick="ctxAction('ban')"     style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.78rem;color:var(--red)"    onmouseenter="this.style.background='rgba(232,112,112,0.08)'" onmouseleave="this.style.background='transparent'">🔨 Banear</div>
+    <div class="ctx-item" onclick="ctxAction('kick')"    style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.78rem;color:var(--gold)"   onmouseenter="this.style.background='rgba(201,168,76,0.08)'"  onmouseleave="this.style.background='transparent'">👢 Kick (logout)</div>
+    <div class="ctx-item" onclick="ctxAction('delmsg')"  style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.78rem;color:var(--red)"    onmouseenter="this.style.background='rgba(232,112,112,0.08)'" onmouseleave="this.style.background='transparent'">🗑 Borrar mensaje</div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <!-- ═══════════════════════════════════════════════════════ SCRIPTS ═══ -->
@@ -638,7 +647,11 @@
 
     function renderDMMessage(container, d, isOwn) {
       const div = document.createElement('div');
+      div.setAttribute('data-ctx', '1');
       div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
+      if (!isOwn) {
+        div.addEventListener('contextmenu', e => showCtxMenu(e, d.from, div, null));
+      }
       div.innerHTML = `
         <div style="width:24px;height:24px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace">${d.from.slice(0,2).toUpperCase()}</div>
         <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
@@ -662,8 +675,69 @@
       await push(ref(window._fbDb, 'dms/' + key), { text, from: me, color: col(me), ts: Date.now() });
     };
 
-    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    document.addEventListener("keydown", e => { if (e.key === "Escape") { closeGame(); document.getElementById('authModal').style.display='none'; } });
+    // ── Menú contextual admin ──
+    let ctxTarget = { user: null, msgEl: null, msgKey: null };
+
+    function showCtxMenu(e, userName, msgEl, msgKey) {
+      const me = sessionStorage.getItem('hub_chat_user');
+      if (me !== 'Gooomezzz') return; // solo admin
+      if (userName === 'Gooomezzz') return; // no sobre sí mismo
+      e.preventDefault();
+      e.stopPropagation();
+      ctxTarget = { user: userName, msgEl, msgKey };
+      const menu = document.getElementById('ctxMenu');
+      document.getElementById('ctxUser').textContent = '@' + userName;
+      // Mostrar/ocultar "borrar mensaje" según si hay msgKey
+      menu.querySelector('[onclick="ctxAction(\'delmsg\')"]').style.display = msgKey ? 'flex' : 'none';
+      menu.style.display = 'block';
+      // Posicionar sin salirse de pantalla
+      const x = Math.min(e.clientX, window.innerWidth  - 180);
+      const y = Math.min(e.clientY, window.innerHeight - 160);
+      menu.style.left = x + 'px';
+      menu.style.top  = y + 'px';
+    }
+
+    window.ctxAction = (action) => {
+      closeCtxMenu();
+      const { user, msgEl, msgKey } = ctxTarget;
+      if (!user) return;
+      if (action === 'dm') {
+        switchTab('dms');
+        setTimeout(() => window._openDMPanel && window._openDMPanel(user), 60);
+      } else if (action === 'ban') {
+        if (!confirm(`¿Banear a ${user}?`)) return;
+        const { ref, push, set } = window._fbFns;
+        push(ref(window._fbDb, 'bans'), user);
+        set(ref(window._fbDb, 'kicks/' + user), { ts: Date.now() });
+        showToast('🔨 ' + user + ' baneado');
+      } else if (action === 'kick') {
+        if (!confirm(`¿Kick a ${user}? Forzar logout.`)) return;
+        const { ref, set } = window._fbFns;
+        set(ref(window._fbDb, 'kicks/' + user), { ts: Date.now() });
+        showToast('👢 ' + user + ' kickeado');
+      } else if (action === 'delmsg') {
+        if (!confirm('¿Borrar este mensaje?')) return;
+        if (msgEl) msgEl.remove();
+        if (msgKey && window._fbFns) {
+          const { ref, set } = window._fbFns;
+          set(ref(window._fbDb, msgKey), null);
+        }
+      }
+    };
+
+    function closeCtxMenu() {
+      document.getElementById('ctxMenu').style.display = 'none';
+      ctxTarget = { user: null, msgEl: null, msgKey: null };
+    }
+
+    document.addEventListener('click',       () => closeCtxMenu());
+    document.addEventListener('contextmenu', (e) => {
+      // Si el clic derecho no es sobre un mensaje, cerrar el menú
+      if (!e.target.closest('[data-ctx]')) closeCtxMenu();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeGame(); closeCtxMenu(); document.getElementById('authModal').style.display='none'; }
+    });
 
     // ── Typing indicator helpers (llamados desde Firebase module via window) ──
     let _chatTypingTimer = null;
@@ -829,21 +903,23 @@
       const loggedName = sessionStorage.getItem('hub_chat_user');
       if (!loggedName) return;
       onChildAdded(ref(db, 'channelMessages/' + channelId), snap => {
+        const msgKey = 'channelMessages/' + channelId + '/' + snap.key;
         const d = snap.val();
         const isOwn = loggedName === d.name;
         const isMention = d.text && d.text.toLowerCase().includes('@' + loggedName.toLowerCase());
         const isAdmin = d.name === ADMIN_USER;
-        const showBan = loggedName === ADMIN_USER && !isOwn;
         const div = document.createElement('div');
+        div.setAttribute('data-ctx', '1');
         div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}${isMention&&!isOwn?';background:rgba(201,168,76,0.07);border-left:2px solid var(--gold);padding-left:0.5rem;margin-left:-0.5rem':''}`;
+        if (!isOwn) {
+          div.addEventListener('contextmenu', e => showCtxMenu(e, d.name, div, msgKey));
+        }
         div.innerHTML = `
           <div style="width:24px;height:24px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace;background:${d.color}">${d.avatar?`<img src="${d.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`:d.name.slice(0,2).toUpperCase()}</div>
           <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
             <div style="display:flex;align-items:center;gap:0.4rem;${isOwn?'flex-direction:row-reverse':''}">
               <span style="font-size:0.6rem;color:var(--text-2)">${d.name}</span>
               ${isAdmin?'<span style="font-size:0.5rem;background:var(--gold);color:#000;padding:1px 5px;border-radius:2px;font-weight:700">👑 ADMIN</span>':''}
-              ${showBan?`<button onclick="banUser('${d.name}')" style="font-size:0.5rem;background:var(--red);color:#fff;border:none;padding:1px 5px;border-radius:2px;cursor:pointer">BAN</button>`:''}
-              ${!isOwn?`<button onclick="openDM('${d.name}')" style="font-size:0.5rem;background:rgba(143,140,232,0.2);color:var(--accent);border:none;padding:1px 5px;border-radius:2px;cursor:pointer">DM</button>`:''}
             </div>
             <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':isMention&&!isOwn?'rgba(201,168,76,0.35)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img?`<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">`:formatText(d.text, loggedName)}</div>
             <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${d.name} · ${relativeTime(d.ts)}</div>
@@ -1008,6 +1084,15 @@
         document.getElementById('btnAddChannel').style.display = name === ADMIN_USER ? 'block' : 'none';
         loadChannelMessages(activeChannel);
         loadDMUserList();
+        window._openDMPanel = openDMPanel;
+
+        // Escuchar kicks — si te kickean, hacer logout
+        onValue(ref(db, 'kicks/' + name), snap => {
+          if (snap.val() && auth.currentUser) {
+            showToast('👢 Has sido kickeado por el admin');
+            setTimeout(() => signOut(auth), 1500);
+          }
+        });
       } else {
         badge.style.display = 'none';
         row.style.display   = 'none';
