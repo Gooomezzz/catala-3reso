@@ -234,10 +234,14 @@
               <button onclick="openAuth()" style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.25rem;border:1px solid rgba(143,140,232,0.4);background:rgba(143,140,232,0.08);color:var(--accent);cursor:pointer">Entrar / Registrarse</button>
             </div>
           </div>
+          <div id="chatTypingBar" style="display:none;padding:0.2rem 1.25rem;font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-3);letter-spacing:0.06em;min-height:1.2rem;background:var(--surface)"></div>
           <div id="chatInputRow" style="display:none;border-top:1px solid var(--border);background:var(--surface);gap:0.75rem;padding:0.85rem 1.25rem;flex-shrink:0">
             <input id="imgInput" type="file" accept="image/*" style="display:none" onchange="sendImg(this)">
             <button onclick="document.getElementById('imgInput').click()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;padding:0.3rem 0.6rem;border:1px solid var(--border-hi);background:transparent;color:var(--text-3);cursor:pointer">📷</button>
-            <input id="chatInput" type="text" placeholder="Escribe un mensaje…" autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
+            <input id="chatInput" type="text" placeholder="Escribe un mensaje…" autocomplete="off"
+              onkeydown="if(event.key==='Enter')sendMsg()"
+              oninput="onChatTyping()"
+              style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
             <button onclick="sendMsg()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer">Enviar</button>
           </div>
         </div>
@@ -271,8 +275,12 @@
         <div style="flex:1;display:flex;flex-direction:column;min-width:0">
           <div id="dmPanelTitle" style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Syne Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--text-2)">Selecciona un usuario</div>
           <div id="dmPanelMessages" style="flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.6rem;height:460px"></div>
+          <div id="dmTypingBar" style="display:none;padding:0.2rem 1.25rem;font-family:'Syne Mono',monospace;font-size:0.58rem;color:var(--text-3);letter-spacing:0.06em;min-height:1.2rem;background:var(--surface)"></div>
           <div id="dmPanelInput" style="display:none;border-top:1px solid var(--border);background:var(--surface);gap:0.75rem;padding:0.85rem 1.25rem;flex-shrink:0">
-            <input id="dmPanelText" type="text" placeholder="Mensaje directo…" autocomplete="off" onkeydown="if(event.key==='Enter')sendDMPanel()" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border-hi);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
+            <input id="dmPanelText" type="text" placeholder="Mensaje directo…" autocomplete="off"
+              onkeydown="if(event.key==='Enter')sendDMPanel()"
+              oninput="onDMTyping()"
+              style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border-hi);padding:0.3rem 0;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--text);outline:none;width:100%">
             <button onclick="sendDMPanel()" style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 1rem;border:1px solid rgba(143,140,232,0.4);background:transparent;color:var(--accent);cursor:pointer;margin-top:0.5rem">Enviar</button>
           </div>
         </div>
@@ -596,6 +604,7 @@
     let currentDMUser = null;
     function getDMKey(a, b) { return [a, b].sort().join('__'); }
 
+    let dmModalListeners = {};
     function openDM(otherUser) {
       const me = sessionStorage.getItem('hub_chat_user');
       if (!me) { showToast('Inicia sesión primero'); return; }
@@ -604,14 +613,15 @@
       document.getElementById('dmTitle').textContent = '💬 ' + otherUser;
       document.getElementById('dmMessages').innerHTML = '';
       document.getElementById('dmModal').style.display = 'flex';
-      // Cargar mensajes del DM
       const key = getDMKey(me, otherUser);
-      if (window._fbDb) {
+      if (window._fbDb && !dmModalListeners[key]) {
+        dmModalListeners[key] = true;
         const { ref, onChildAdded } = window._fbFns;
         onChildAdded(ref(window._fbDb, 'dms/' + key), snap => {
           const d = snap.val();
-          const isOwn = d.from === me;
-          renderDMMessage(document.getElementById('dmMessages'), d, isOwn);
+          if (currentDMUser === otherUser) {
+            renderDMMessage(document.getElementById('dmMessages'), d, d.from === me);
+          }
         });
       }
     }
@@ -627,14 +637,13 @@
     });
 
     function renderDMMessage(container, d, isOwn) {
-      const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
       const div = document.createElement('div');
       div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
       div.innerHTML = `
         <div style="width:24px;height:24px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace">${d.from.slice(0,2).toUpperCase()}</div>
         <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
           <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img ? `<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">` : d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
-          <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${time}</div>
+          <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${relativeTime(d.ts)}</div>
         </div>`;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
@@ -655,6 +664,34 @@
 
     function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     document.addEventListener("keydown", e => { if (e.key === "Escape") { closeGame(); document.getElementById('authModal').style.display='none'; } });
+
+    // ── Typing indicator helpers (llamados desde Firebase module via window) ──
+    let _chatTypingTimer = null;
+    window.onChatTyping = () => {
+      clearTimeout(_chatTypingTimer);
+      if (window._fbDb && window._fbAuth?.currentUser) {
+        const me = window._fbAuth.currentUser.displayName;
+        const { ref, set } = window._fbFns;
+        set(ref(window._fbDb, 'typing/chat/' + me), { name: me, ts: Date.now() });
+        _chatTypingTimer = setTimeout(() => {
+          set(ref(window._fbDb, 'typing/chat/' + me), null);
+        }, 2500);
+      }
+    };
+
+    let _dmTypingTimer = null;
+    window.onDMTyping = () => {
+      clearTimeout(_dmTypingTimer);
+      if (window._fbDb && window._fbAuth?.currentUser && window._activeDMUser) {
+        const me = window._fbAuth.currentUser.displayName;
+        const key = getDMKey(me, window._activeDMUser);
+        const { ref, set } = window._fbFns;
+        set(ref(window._fbDb, 'typing/dm/' + key + '/' + me), { name: me, ts: Date.now() });
+        _dmTypingTimer = setTimeout(() => {
+          set(ref(window._fbDb, 'typing/dm/' + key + '/' + me), null);
+        }, 2500);
+      }
+    };
 
     window.openImg = (src) => {
       const overlay = document.createElement('div');
@@ -711,7 +748,41 @@
       renderAll();
     });
 
-    // ── Channels ──
+    // ── Timestamp relativo ──
+    function relativeTime(ts) {
+      const now = Date.now();
+      const diff = now - ts;
+      const mins  = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days  = Math.floor(diff / 86400000);
+      if (mins < 1)   return 'ahora mismo';
+      if (mins < 60)  return `hace ${mins} min`;
+      if (hours < 8)  return `hace ${hours}h`;
+      // Mismo día pero >8h: mostrar hora
+      const d = new Date(ts);
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      if (ts >= todayStart.getTime()) {
+        return d.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'});
+      }
+      // Ayer
+      const yesterdayStart = new Date(todayStart); yesterdayStart.setDate(yesterdayStart.getDate()-1);
+      if (ts >= yesterdayStart.getTime()) {
+        return 'ayer ' + d.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'});
+      }
+      // Más antiguo: día + hora
+      return d.toLocaleDateString('es', {day:'numeric', month:'short'}) + ' ' + d.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'});
+    }
+
+    // ── Highlight @menciones ──
+    function formatText(text, myName) {
+      const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      return escaped.replace(/@(\w+)/g, (match, user) => {
+        const isMe = user.toLowerCase() === myName.toLowerCase();
+        return `<span style="color:${isMe?'var(--gold)':'var(--accent-2)'};font-weight:600">${match}</span>`;
+      });
+    }
+    let channelListeners = {};
+
     function renderChannels(channels) {
       const list = document.getElementById('channelList');
       list.innerHTML = '';
@@ -725,11 +796,12 @@
       });
     }
 
-    function switchChannel(id, name) {
+    function switchChannel(id, chName) {
       activeChannel = id;
-      document.getElementById('activeChannelName').textContent = name;
+      document.getElementById('activeChannelName').textContent = chName;
       document.getElementById('chatMessages').innerHTML = '';
-      loadChannelMessages(id);
+      if (!channelListeners[id]) { channelListeners[id] = true; loadChannelMessages(id); }
+      else { /* re-render stored messages - reload listener is already active, msgs repopulate on next message */ }
       renderChannels(currentChannels);
     }
 
@@ -754,17 +826,16 @@
     };
 
     function loadChannelMessages(channelId) {
-      const msgs = document.getElementById('chatMessages');
       const loggedName = sessionStorage.getItem('hub_chat_user');
       if (!loggedName) return;
       onChildAdded(ref(db, 'channelMessages/' + channelId), snap => {
         const d = snap.val();
         const isOwn = loggedName === d.name;
-        const time = new Date(d.ts).toLocaleTimeString('ca', {hour:'2-digit', minute:'2-digit'});
+        const isMention = d.text && d.text.toLowerCase().includes('@' + loggedName.toLowerCase());
         const isAdmin = d.name === ADMIN_USER;
         const showBan = loggedName === ADMIN_USER && !isOwn;
         const div = document.createElement('div');
-        div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}`;
+        div.style.cssText = `display:flex;gap:0.6rem;align-items:flex-start;${isOwn?'flex-direction:row-reverse':''}${isMention&&!isOwn?';background:rgba(201,168,76,0.07);border-left:2px solid var(--gold);padding-left:0.5rem;margin-left:-0.5rem':''}`;
         div.innerHTML = `
           <div style="width:24px;height:24px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;font-family:'Syne Mono',monospace;background:${d.color}">${d.avatar?`<img src="${d.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`:d.name.slice(0,2).toUpperCase()}</div>
           <div style="display:flex;flex-direction:column;max-width:68%;${isOwn?'align-items:flex-end':''}">
@@ -774,11 +845,14 @@
               ${showBan?`<button onclick="banUser('${d.name}')" style="font-size:0.5rem;background:var(--red);color:#fff;border:none;padding:1px 5px;border-radius:2px;cursor:pointer">BAN</button>`:''}
               ${!isOwn?`<button onclick="openDM('${d.name}')" style="font-size:0.5rem;background:rgba(143,140,232,0.2);color:var(--accent);border:none;padding:1px 5px;border-radius:2px;cursor:pointer">DM</button>`:''}
             </div>
-            <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img?`<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">`:d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
-            <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${d.name} · ${time}</div>
+            <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':isMention&&!isOwn?'rgba(201,168,76,0.35)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img?`<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">`:formatText(d.text, loggedName)}</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${d.name} · ${relativeTime(d.ts)}</div>
           </div>`;
-        msgs.appendChild(div);
-        msgs.scrollTop = msgs.scrollHeight;
+        if (activeChannel === channelId) {
+          const msgs = document.getElementById('chatMessages');
+          msgs.appendChild(div);
+          msgs.scrollTop = msgs.scrollHeight;
+        }
       });
     }
 
@@ -1073,6 +1147,7 @@
       const me = sessionStorage.getItem('hub_chat_user');
       if (!me) return;
       activeDMUser = otherUser;
+      window._activeDMUser = otherUser;
 
       // Marcar como leído
       const key = getDMKey(me, otherUser);
@@ -1086,13 +1161,15 @@
       document.getElementById('dmPanelInput').style.display = 'flex';
       renderDMUserList(document.getElementById('dmSearch')?.value?.toLowerCase().trim() || '');
 
+      // Typing listener para esta conversación
+      listenDMTyping(key, me);
+
       if (!dmPanelListeners[key]) {
         dmPanelListeners[key] = true;
         onChildAdded(ref(db, 'dms/' + key), snap => {
           if (activeDMUser === otherUser) {
             const d = snap.val();
             renderDMMessage(document.getElementById('dmPanelMessages'), d, d.from === me);
-            // Auto-marcar leído si estás en la conversación
             dmLastSeen[key] = Date.now();
             saveDmLastSeen();
           }
@@ -1108,8 +1185,35 @@
       input.value = '';
       const me = u.displayName || u.email;
       const key = getDMKey(me, activeDMUser);
+      // Limpiar typing al enviar
+      set(ref(db, 'typing/dm/' + key + '/' + me), null);
       await push(ref(db, 'dms/' + key), { text, from: me, color: col(me), ts: Date.now() });
     };
+
+    // ── Typing listeners ──
+    // Chat global
+    onValue(ref(db, 'typing/chat'), snap => {
+      const me = auth.currentUser?.displayName;
+      const bar = document.getElementById('chatTypingBar');
+      if (!bar) return;
+      const others = snap.val() ? Object.values(snap.val()).filter(t => t.name !== me && (Date.now()-t.ts) < 4000) : [];
+      if (others.length === 0) { bar.style.display = 'none'; bar.textContent = ''; return; }
+      const names = others.map(t => t.name).join(', ');
+      bar.style.display = 'block';
+      bar.textContent = names + (others.length === 1 ? ' está escribiendo…' : ' están escribiendo…');
+    });
+
+    // DM typing — se actualiza al abrir cada conversación
+    function listenDMTyping(key, myName) {
+      onValue(ref(db, 'typing/dm/' + key), snap => {
+        const bar = document.getElementById('dmTypingBar');
+        if (!bar) return;
+        const others = snap.val() ? Object.values(snap.val()).filter(t => t.name !== myName && (Date.now()-t.ts) < 4000) : [];
+        if (others.length === 0) { bar.style.display = 'none'; bar.textContent = ''; return; }
+        bar.style.display = 'block';
+        bar.textContent = others[0].name + ' está escribiendo…';
+      });
+    }
   </script>
 </body>
 </html>
