@@ -602,7 +602,9 @@
       document.getElementById('aiSendBtn').disabled = false;
       msgs.scrollTop = msgs.scrollHeight;
     }
-
+    function escHtml(s) { 
+    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); 
+    }
     // ── Toast ──
     function showToast(msg) {
       const t = document.getElementById("toast");
