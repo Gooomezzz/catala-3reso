@@ -840,7 +840,7 @@
             }
 
             document.getElementById('ytResults').innerHTML = data.items.map(item => `
-            <div class="link-card" onclick="playYT('${item.id.videoId}','${escHtml(item.snippet.title)}')">
+            <div class="link-card" onclick="window.playYT('${item.id.videoId}')">
                 <img src="${item.snippet.thumbnails.medium.url}" style="width:100%;border-radius:2px;margin-bottom:0.25rem">
                 <div class="link-card-name" style="font-size:0.78rem;line-height:1.4">${escHtml(item.snippet.title)}</div>
                 <div class="link-card-url">${escHtml(item.snippet.channelTitle)}</div>
