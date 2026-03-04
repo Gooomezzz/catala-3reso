@@ -444,6 +444,7 @@
     let aiHistory = [];
     let aiTyping = false;
     let games = { html: [...DEFAULT_GAMES.html], links: [] };
+    window._games = games; // exponer al módulo Firebase
 
     // ── Unlock logic ──
     function unlock() {
@@ -485,13 +486,13 @@
     function renderAll() {
       renderHtmlGames();
       renderLinks();
-      document.getElementById("countGames").textContent = games.html.length;
-      document.getElementById("countLinks").textContent = games.links.length;
+      document.getElementById("countGames").textContent = window._games.html.length;
+      document.getElementById("countLinks").textContent = window._games.links.length;
     }
 
     function renderHtmlGames() {
       const q = document.getElementById("searchHtml").value.toLowerCase();
-      const filtered = games.html.filter(g => g.name.toLowerCase().includes(q));
+      const filtered = window._games.html.filter(g => g.name.toLowerCase().includes(q));
       const container = document.getElementById("htmlList");
       if (filtered.length === 0) {
         container.innerHTML = `<div style="padding:3rem 0;text-align:center;color:var(--text-3);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;">Ningún juego añadido todavía</div>`;
@@ -509,7 +510,7 @@
 
     function renderLinks() {
       const q = document.getElementById("searchLinks").value.toLowerCase();
-      const filtered = games.links.filter(g => g.name.toLowerCase().includes(q) || g.url.toLowerCase().includes(q));
+      const filtered = window._games.links.filter(g => g.name.toLowerCase().includes(q) || g.url.toLowerCase().includes(q));
       const container = document.getElementById("linksList");
       container.innerHTML = filtered.map(g => `
         <div class="link-card" onclick="launchGame('${escHtml(g.name)}','${escHtml(g.url)}')">
@@ -810,13 +811,13 @@
 
     // ── Juegos desde Firebase ──
     onValue(ref(db, 'games/html'), snap => {
-      games.html = snap.val()
+      window._games.html = snap.val()
         ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k}))
         : [...DEFAULT_GAMES.html];
       renderAll();
     });
     onValue(ref(db, 'games/links'), snap => {
-      games.links = snap.val()
+      window._games.links = snap.val()
         ? Object.entries(snap.val()).map(([k,v]) => ({...v, key:k}))
         : [];
       renderAll();
@@ -856,6 +857,7 @@
       });
     }
     let channelListeners = {};
+    let channelCache = {}; // { channelId: [divElement, ...] }
 
     function renderChannels(channels) {
       const list = document.getElementById('channelList');
@@ -873,9 +875,18 @@
     function switchChannel(id, chName) {
       activeChannel = id;
       document.getElementById('activeChannelName').textContent = chName;
-      document.getElementById('chatMessages').innerHTML = '';
-      if (!channelListeners[id]) { channelListeners[id] = true; loadChannelMessages(id); }
-      else { /* re-render stored messages - reload listener is already active, msgs repopulate on next message */ }
+      const msgs = document.getElementById('chatMessages');
+      msgs.innerHTML = '';
+      if (!channelListeners[id]) {
+        // Primera vez: registrar listener y cachear mensajes
+        channelListeners[id] = true;
+        channelCache[id] = [];
+        loadChannelMessages(id);
+      } else {
+        // Ya tiene listener: re-renderizar desde caché
+        (channelCache[id] || []).forEach(el => msgs.appendChild(el.cloneNode(true)));
+        msgs.scrollTop = msgs.scrollHeight;
+      }
       renderChannels(currentChannels);
     }
 
@@ -924,6 +935,10 @@
             <div style="background:${isOwn?'rgba(143,140,232,0.1)':'var(--surface-2)'};border:1px solid ${isOwn?'rgba(143,140,232,0.25)':isMention&&!isOwn?'rgba(201,168,76,0.35)':'var(--border)'};padding:0.4rem 0.7rem;font-size:0.83rem;line-height:1.5;color:var(--text);word-break:break-word">${d.img?`<img src="${d.img}" onclick="openImg(this.src)" style="max-width:200px;max-height:200px;border-radius:4px;display:block;cursor:zoom-in">`:formatText(d.text, loggedName)}</div>
             <div style="font-family:'Syne Mono',monospace;font-size:0.55rem;color:var(--text-2);margin-top:3px;opacity:0.7">${d.name} · ${relativeTime(d.ts)}</div>
           </div>`;
+        // Guardar en caché siempre
+        if (!channelCache[channelId]) channelCache[channelId] = [];
+        channelCache[channelId].push(div);
+        // Solo pintar en DOM si este canal está activo ahora
         if (activeChannel === channelId) {
           const msgs = document.getElementById('chatMessages');
           msgs.appendChild(div);
@@ -1082,7 +1097,8 @@
         row.style.display   = 'flex';
         empty.style.display = 'none';
         document.getElementById('btnAddChannel').style.display = name === ADMIN_USER ? 'block' : 'none';
-        loadChannelMessages(activeChannel);
+        // FIX: pasar por switchChannel para respetar channelListeners y no duplicar
+        if (!channelListeners[activeChannel]) switchChannel(activeChannel, document.getElementById('activeChannelName').textContent);
         loadDMUserList();
         window._openDMPanel = openDMPanel;
 
@@ -1097,6 +1113,11 @@
         badge.style.display = 'none';
         row.style.display   = 'none';
         empty.style.display = 'flex';
+        // Reset listeners para que al volver a iniciar sesión no se dupliquen
+        channelListeners = {};
+        channelCache = {};
+        dmPanelListeners = {};
+        window._activeDMUser = null;
       }
     });
 
