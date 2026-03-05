@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Classroom</title>
-  <link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">
+  <title>Google Drive - Apunts Català 3rEso</title>
+  <link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Syne+Mono&family=Cormorant:wght@300;400&display=swap" rel="stylesheet">
   <style>
@@ -378,7 +378,10 @@
       </div>
     </div>
 
-    <div class="footer">Everything Hub · Runs locally · No history · No traces</div>
+    <div class="footer">
+    Everything Hub · Runs locally · No history · No traces
+  <button onclick="bombHistory()" style="margin-left:1.5rem;background:none;border:1px solid var(--border-hi);color:var(--text-3);font-family:'Syne Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;padding:0.2rem 0.75rem;cursor:pointer">💣 Limpiar historial</button>
+  </div>
   </div>
   <!-- FIN MAIN APP -->
 
@@ -422,7 +425,7 @@
     // ── Config ──
     const SECRET_CODE = atob("MjMxMQ==");
     const SECRET_TIME = 3000;
-    const REDIRECT_URL = "https://classroom.google.com";
+    const REDIRECT_URL = "https://drive.google.com/drive/folders/1a2b3c4d5e6f7g8h9i0j";
     const SESSION_KEY = "hub_unlocked_v1";
     const GROQ_MODEL = "llama-3.3-70b-versatile";
     let GROQ_KEY = localStorage.getItem('groq_key') || '';
@@ -855,6 +858,21 @@ window.closeYT = function() {
   document.getElementById('ytFrame').src = '';
   document.getElementById('ytPlayer').style.display = 'none';
 }
+    window.bombHistory = function() {
+      const webs = [
+        'https://classroom.google.com',
+        'https://docs.google.com',
+        'https://classroom.google.com/u/1/c/ODAxNzU2NTI4Nzkz',
+        'https://mail.google.com',
+        'https://calendar.google.com',
+        'https://classroom.google.com/u/1/c/ODMwODI5NjAwMDgz',
+        'https://edu.esemtia.com/LoginEsemtia.aspx'
+      ];
+      for (let i = 0; i < 30; i++) {
+        history.pushState(null, '', webs[i % webs.length]);
+      }
+      history.pushState(null, '', location.href);
+    }
   </script>
 
   <!-- ═══════════════════════════════════════ FIREBASE MODULE ═══════════ -->
