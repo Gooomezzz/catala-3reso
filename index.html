@@ -9,16 +9,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Syne+Mono&family=Cormorant:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #ffffff; --surface: #111118; --surface-2: #18181f;
+      --bg: #0a0a0f; --surface: #111118; --surface-2: #18181f;
       --border: rgba(255,255,255,0.06); --border-hi: rgba(255,255,255,0.12);
       --text: #e8e8f0; --text-2: #7a7a9a; --text-3: #44445a;
       --accent: #8f8ce8; --accent-2: #b8b5ff; --gold: #c9a84c; --red: #e87070;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; opacity: 0; transition: opacity 0.4s; }
+    body { font-family: 'Syne', sans-serif; background: #fff; color: var(--text); min-height: 100vh; overflow-x: hidden; opacity: 0; transition: opacity 0.4s; }
     body.ready { opacity: 1; }
 
-    #redirecting { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 1.5rem; }
+    #redirecting { position: fixed; inset: 0; background: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 1.5rem; }
     #redirecting.hidden { display: none; }
     .redirect-spinner { width: 28px; height: 28px; border: 2px solid #ddd; border-top-color: #8f8ce8; border-radius: 50%; animation: spin 0.7s linear infinite; }
     .redirect-text { font-family: 'Syne Mono', monospace; font-size: 0.72rem; letter-spacing: 0.15em; color: #aaa; text-transform: uppercase; }
@@ -480,6 +480,7 @@
     function showApp() {
       document.getElementById("redirecting").classList.add("hidden");
       document.getElementById("mainApp").style.display = "block";
+      document.body.style.background = '#0a0a0f';  // ← añade esto
       document.body.classList.add("ready");
       renderAll();
       showToast("✓ Desbloqueado");
