@@ -482,7 +482,7 @@
       typed += e.key; clearTimeout(resetTimer);
       if (typed.includes(SECRET_CODE)) { typed = ""; unlock(); return; }
       resetTimer = setTimeout(() => { typed = ""; }, SECRET_TIME);
-      if (e.ctrlKey && e.key === 'm') {
+      if (e.ctrlKey && e.key === 'b') {
         e.preventDefault();
         window.location.replace ("https://drive.google.com");
       }
